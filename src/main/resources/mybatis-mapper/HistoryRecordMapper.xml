@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.HistoryRecordMapper">
+
+    <insert id="insertHistoryRecord" parameterType="com.database.warehouse.entity.HistoryRecord">
+        INSERT INTO `history_record` (`history_record_type`, `history_record`, `history_time`)
+        VALUES (#{record.type}, #{record.record}, #{record.time})
+    </insert>
+
+</mapper>

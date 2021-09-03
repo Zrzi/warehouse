@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.CostMapper">
+
+    <select id="selectCost" resultType="Double" parameterType="String">
+        SELECT `cost`
+        FROM `cost`
+        WHERE `date` = #{date}
+    </select>
+
+    <insert id="insertCost">
+        INSERT INTO `cost` (`date`, `cost`)
+        VALUES (#{date}, #{cost})
+    </insert>
+
+    <update id="updateCost">
+        UPDATE `cost`
+        SET `cost` = #{cost}
+        WHERE `date` = #{date}
+    </update>
+
+</mapper>

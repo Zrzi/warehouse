@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.WarehouseMapper">
+
+    <resultMap id="warehouse" type="com.database.warehouse.entity.Warehouse">
+        <id property="wid" column="warehouse_id" />
+        <result property="type" column="warehouse_type" />
+        <result property="address" column="warehouse_address" />
+        <result property="max" column="warehouse_max" />
+        <result property="min" column="warehouse_min" />
+    </resultMap>
+
+    <select id="selectNumber" resultType="Integer">
+        SELECT COUNT(`warehouse_id`)
+        FROM `warehouse`
+    </select>
+
+    <select id="selectWarehouseByWid" parameterType="Long" resultMap="warehouse">
+        SELECT `warehouse_id`, `warehouse_type`, `warehouse_address`, `warehouse_max`, `warehouse_min`
+        FROM `warehouse`
+        WHERE `warehouse_id` = #{wid}
+    </select>
+
+    <select id="selectWarehouseByAddress" parameterType="String" resultMap="warehouse">
+        SELECT `warehouse_id`, `warehouse_type`, `warehouse_address`, `warehouse_max`, `warehouse_min`
+        FROM `warehouse`
+        WHERE `warehouse_address` = #{address}
+    </select>
+
+    <select id="selectWarehouseByType" parameterType="String" resultMap="warehouse">
+        SELECT `warehouse_id`, `warehouse_type`, `warehouse_address`, `warehouse_max`, `warehouse_min`
+        FROM `warehouse`
+        WHERE `warehouse_type` = #{type}
+    </select>
+
+    <select id="selectWarehouse" resultMap="warehouse">
+        SELECT `warehouse_id`, `warehouse_type`, `warehouse_address`, `warehouse_max`, `warehouse_min`
+        FROM `warehouse`
+    </select>
+
+    <insert id="insertWarehouse" parameterType="com.database.warehouse.entity.Warehouse"
+            useGeneratedKeys="true" keyProperty="wid" keyColumn="warehouse_id">
+        INSERT INTO `warehouse` (`warehouse_type`, `warehouse_address`, `warehouse_max`, `warehouse_min`)
+        VALUES (#{warehouse.type}, #{warehouse.address}, #{warehouse.max}, #{warehouse.min})
+    </insert>
+
+    <update id="updateWarehouse" parameterType="com.database.warehouse.entity.Warehouse">
+        UPDATE `warehouse`
+        SET `warehouse_type` = #{warehouse.type},
+            `warehouse_address` = #{warehouse.address},
+            `warehouse_max` = #{warehouse.max},
+            `warehouse_min` = #{warehouse.min}
+        WHERE `warehouse_id` = #{warehouse.wid}
+    </update>
+
+    <delete id="deleteWarehouse" parameterType="Long">
+        DELETE FROM `warehouse`
+        WHERE `warehouse_id` = #{wid}
+    </delete>
+
+</mapper>

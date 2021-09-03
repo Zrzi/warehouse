@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.PurchaseOrderMapper">
+
+    <resultMap id="order" type="com.database.warehouse.entity.PurchaseOrder">
+        <id property="id" column="purchase_order_id" />
+        <result property="eid" column="purchase_order_employee_id" />
+        <result property="mid" column="purchase_order_material_id" />
+        <result property="time" column="purchase_order_time" />
+        <result property="number" column="purchase_order_number" />
+        <result property="restNumber" column="purchase_order_rest_number" />
+        <result property="price" column="purchase_order_price" />
+        <result property="approved" column="purchase_order_approved" />
+        <result property="stored" column="purchase_order_stored" />
+    </resultMap>
+
+    <resultMap id="orderVO" type="com.database.warehouse.entity.vo.PurchaseOrderVO">
+        <id property="id" column="purchase_order_id" />
+        <result property="time" column="purchase_order_time" />
+        <result property="number" column="purchase_order_number" />
+        <result property="restNumber" column="purchase_order_rest_number" />
+        <result property="price" column="purchase_order_price" />
+        <association property="employee" javaType="com.database.warehouse.entity.Employee">
+            <id property="eid" column="e_id" />
+            <result property="name" column="e_name" />
+        </association>
+        <association property="material" javaType="com.database.warehouse.entity.Material">
+            <id property="mid" column="m_id" />
+            <result property="name" column="m_name" />
+        </association>
+    </resultMap>
+
+    <select id="selectUnapprovedOrderVO" resultMap="orderVO">
+        SELECT `purchase_order`.`purchase_order_id`, `purchase_order`.`purchase_order_time`,
+               `purchase_order`.`purchase_order_number`, `purchase_order`.`purchase_order_rest_number`,
+               `purchase_order`.`purchase_order_price`,
+               `employee`.`employee_id` AS `e_id`, `employee`.`employee_name` AS `e_name`,
+               `material`.`material_id` AS `m_id`, `material`.`material_name` AS `m_name`
+        FROM `purchase_order`, `employee`, `material`
+        WHERE `purchase_order`.`purchase_order_employee_id` = `employee`.`employee_id`
+          AND `purchase_order`.`purchase_order_material_id` = `material`.`material_id`
+          AND `purchase_order`.`purchase_order_approved` = 0
+    </select>
+
+    <select id="selectUnstoredOrderVO" resultMap="orderVO">
+        SELECT `purchase_order`.`purchase_order_id`, `purchase_order`.`purchase_order_time`,
+               `purchase_order`.`purchase_order_number`, `purchase_order`.`purchase_order_rest_number`,
+               `purchase_order`.`purchase_order_price`,
+               `employee`.`employee_id` AS `e_id`, `employee`.`employee_name` AS `e_name`,
+               `material`.`material_id` AS `m_id`, `material`.`material_name` AS `m_name`
+        FROM `purchase_order`, `employee`, `material`
+        WHERE `purchase_order`.`purchase_order_employee_id` = `employee`.`employee_id`
+          AND `purchase_order`.`purchase_order_material_id` = `material`.`material_id`
+          AND `purchase_order`.`purchase_order_approved` = 1
+          AND `purchase_order`.`purchase_order_stored` = 0
+    </select>
+
+    <select id="selectPurchaseOrderById" parameterType="Long" resultMap="order">
+        SELECT `purchase_order_id`, `purchase_order_employee_id`, `purchase_order_material_id`,
+               `purchase_order_time`, `purchase_order_number`, `purchase_order_rest_number`,
+               `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`
+        FROM `purchase_order`
+        WHERE `purchase_order_id` = #{id}
+    </select>
+
+    <select id="selectPurchaseOrderByEid" parameterType="Long" resultMap="order">
+        SELECT `purchase_order_id`, `purchase_order_employee_id`, `purchase_order_material_id`,
+               `purchase_order_time`, `purchase_order_number`, `purchase_order_rest_number`,
+               `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`
+        FROM `purchase_order`
+        WHERE `purchase_order_employee_id` = #{eid}
+    </select>
+
+    <select id="selectPurchaseOrderByMid" parameterType="Long" resultMap="order">
+        SELECT `purchase_order_id`, `purchase_order_employee_id`, `purchase_order_material_id`,
+               `purchase_order_time`, `purchase_order_number`, `purchase_order_rest_number`,
+               `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`
+        FROM `purchase_order`
+        WHERE `purchase_order_material_id` = #{mid}
+    </select>
+
+    <select id="selectPurchaseOrder" resultMap="order">
+        SELECT `purchase_order_id`, `purchase_order_employee_id`, `purchase_order_material_id`,
+               `purchase_order_time`, `purchase_order_number`, `purchase_order_rest_number`,
+               `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`
+        FROM `purchase_order`
+    </select>
+
+    <select id="selectUnapprovedPurchaseOrder" resultMap="order">
+        SELECT `purchase_order_id`, `purchase_order_employee_id`, `purchase_order_material_id`,
+               `purchase_order_time`, `purchase_order_number`, `purchase_order_rest_number`,
+               `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`
+        FROM `purchase_order`
+        WHERE `purchase_order_approved` = 0
+    </select>
+
+    <select id="selectUnstoredPurchaseOrder" resultMap="order">
+        SELECT `purchase_order_id`, `purchase_order_employee_id`, `purchase_order_material_id`,
+               `purchase_order_time`, `purchase_order_number`, `purchase_order_rest_number`,
+               `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`
+        FROM `purchase_order`
+        WHERE `purchase_order_approved` = 1
+          AND `purchase_order_stored` = 0
+    </select>
+
+    <insert id="insertPurchaseOrder" parameterType="com.database.warehouse.entity.PurchaseOrder"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="purchase_order_id">
+        INSERT INTO `purchase_order` (`purchase_order_employee_id`, `purchase_order_material_id`, `purchase_order_time`, `purchase_order_number`,
+                                      `purchase_order_rest_number`, `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`)
+        VALUES (#{order.eid}, #{order.mid}, #{order.time}, #{order.number}, #{order.number}, #{order.price}, 0, 0)
+    </insert>
+
+    <update id="updatePurchaseOrder" parameterType="com.database.warehouse.entity.PurchaseOrder">
+        UPDATE `purchase_order`
+        SET `purchase_order_number` = #{order.number},
+            `purchase_order_rest_number` = #{order.restNumber},
+            `purchase_order_price` = #{order.price},
+            `purchase_order_approved` = #{order.approved},
+            `purchase_order_stored` = #{order.stored}
+        WHERE `purchase_order_id` = #{order.id}
+    </update>
+
+    <delete id="deletePurchaseOrder">
+        DELETE FROM `purchase_order`
+        WHERE `purchase_order_id` = #{id}
+    </delete>
+
+</mapper>

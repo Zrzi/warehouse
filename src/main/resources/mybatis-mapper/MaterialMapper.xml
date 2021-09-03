@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.MaterialMapper">
+
+    <resultMap id="material" type="com.database.warehouse.entity.Material">
+        <id property="mid" column="material_id" />
+        <result property="name" column="material_name" />
+    </resultMap>
+
+    <select id="selectNumber" resultType="Integer">
+        SELECT COUNT(`material_id`)
+        FROM `material`
+    </select>
+
+    <select id="selectMaterialByWid" resultMap="material">
+        SELECT `material_id`, `material_name`
+        FROM `material`
+        WHERE `material_id` IN (
+            SELECT `material_storation_material_id`
+            FROM `material_storation`
+            WHERE `material_storation_warehouse_id` = #{wid}
+        )
+    </select>
+
+    <select id="selectMaterialByMid" parameterType="Long" resultMap="material">
+        SELECT `material_id`, `material_name`
+        FROM `material`
+        WHERE `material_id` = #{mid}
+    </select>
+
+    <select id="selectValidMaterialByMid" parameterType="Long" resultMap="material">
+        SELECT `material_id`, `material_name`
+        FROM `material`
+        WHERE `material_id` = #{mid}
+          AND `valid` = 1
+    </select>
+
+    <select id="selectMaterials" resultMap="material">
+        SELECT `material_id`, `material_name`
+        FROM `material`
+        WHERE `valid` = 1
+    </select>
+
+    <select id="selectMidByName" parameterType="String" resultType="Long">
+        SELECT `material_id`
+        FROM `material`
+        WHERE `material_name` = #{name}
+    </select>
+
+    <select id="selectValidMidByName" parameterType="String" resultType="Long">
+        SELECT `material_id`
+        FROM `material`
+        WHERE `material_name` = #{name}
+          AND `valid` = 1
+    </select>
+
+    <insert id="insertMaterial" parameterType="com.database.warehouse.entity.Material"
+            useGeneratedKeys="true" keyProperty="mid" keyColumn="material_id">
+        INSERT INTO `material` (`material_name`, `valid`)
+        VALUES (#{material.name}, 1)
+    </insert>
+
+    <update id="updateMaterial" parameterType="com.database.warehouse.entity.Material">
+        UPDATE `material`
+        SET `material_name` = #{material.name}
+        WHERE `material_id` = #{material.mid}
+    </update>
+
+    <update id="deleteMaterial" parameterType="Long">
+        UPDATE `material`
+        SET `valid` = 0
+        WHERE `material_id` = #{mid}
+    </update>
+
+    <update id="activateMaterial" parameterType="com.database.warehouse.entity.Material">
+        UPDATE `material`
+        SET `material_name` = #{material.name},
+            `valid` = 1
+        WHERE `material_id` = #{material.mid}
+    </update>
+
+</mapper>

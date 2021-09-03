@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.DepartmentMapper">
+
+    <resultMap id="department" type="com.database.warehouse.entity.Department">
+        <id property="did" column="department_id" />
+        <result property="name" column="department_name" />
+        <result property="eid" column="department_admin_id" />
+    </resultMap>
+
+    <select id="selectNumber" resultType="Integer">
+        SELECT COUNT(`department_id`)
+        FROM `department`
+    </select>
+
+    <select id="selectDepartmentByDid" parameterType="Long" resultMap="department">
+        SELECT `department_id`, `department_name`, `department_admin_id`
+        FROM `department`
+        WHERE `department_id` = #{did}
+    </select>
+
+    <select id="selectDepartments" resultMap="department">
+        SELECT `department_id`, `department_name`, `department_admin_id`
+        FROM `department`
+    </select>
+
+    <select id="selectDidByName" parameterType="String" resultType="Long">
+        SELECT `department_id`
+        FROM `department`
+        WHERE `department_name` = #{name}
+    </select>
+
+    <select id="selectAdminIdByDid" parameterType="Long" resultType="Long">
+        SELECT `department_admin_id`
+        FROM `department`
+        WHERE `department_id` = #{did}
+    </select>
+
+    <insert id="insertDepartment" parameterType="com.database.warehouse.entity.Department"
+            useGeneratedKeys="true" keyProperty="did" keyColumn="department_id">
+        INSERT INTO `department` (`department_name`, `department_admin_id`)
+        VALUES (#{department.name}, #{department.eid})
+    </insert>
+
+    <update id="updateDepartment" parameterType="com.database.warehouse.entity.Department">
+        UPDATE `department`
+        SET `department_admin_id` = #{department.eid}
+        WHERE `department_id` = #{department.did}
+    </update>
+
+    <delete id="deleteDepartment" parameterType="Long">
+        DELETE FROM `department`
+        WHERE `department_id` = #{department.did}
+    </delete>
+
+</mapper>

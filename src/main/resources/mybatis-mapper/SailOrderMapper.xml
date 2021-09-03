@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.SailOrderMapper">
+
+    <resultMap id="order" type="com.database.warehouse.entity.SailOrder">
+        <id property="id" column="sail_order_id" />
+        <result property="eid" column="sail_order_employee_id" />
+        <result property="pid" column="sail_order_product_id" />
+        <result property="time" column="sail_order_time" />
+        <result property="number" column="sail_order_number" />
+        <result property="price" column="sail_order_price" />
+    </resultMap>
+
+    <select id="selectSailOrderByKey" resultMap="order">
+        SELECT `sail_order_id`, `sail_order_employee_id`, `sail_order_product_id`,
+               `sail_order_time`, `sail_order_number`, `sail_order_price`
+        FROM `sail_order`
+        WHERE `sail_order_id` = #{id}
+    </select>
+
+    <select id="selectSailOrderByEid" parameterType="Long" resultMap="order">
+        SELECT `sail_order_id`, `sail_order_employee_id`, `sail_order_product_id`,
+               `sail_order_time`, `sail_order_number`, `sail_order_price`
+        FROM `sail_order`
+        WHERE `sail_order_employee_id` = #{eid}
+    </select>
+
+    <select id="selectSailOrderByPid" parameterType="Long" resultMap="order">
+        SELECT `sail_order_id`, `sail_order_employee_id`, `sail_order_product_id`,
+               `sail_order_time`, `sail_order_number`, `sail_order_price`
+        FROM `sail_order`
+        WHERE `sail_order_product_id` = #{pid}
+    </select>
+
+    <select id="selectSailOrder" resultMap="order">
+        SELECT `sail_order_id`, `sail_order_employee_id`, `sail_order_product_id`,
+               `sail_order_time`, `sail_order_number`, `sail_order_price`
+        FROM `sail_order`
+    </select>
+
+    <insert id="insertSailOrder" parameterType="com.database.warehouse.entity.SailOrder"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="sail_order_id">
+        INSERT INTO `sail_order` (`sail_order_employee_id`, `sail_order_product_id`, `sail_order_time`, `sail_order_number`, `sail_order_price`)
+        VALUES (#{order.eid}, #{order.pid}, #{order.time}, #{order.number}, #{order.price})
+    </insert>
+
+    <update id="updateSailOrder" parameterType="com.database.warehouse.entity.SailOrder">
+        UPDATE `sail_order`
+        SET `sail_order_number` = #{order.number},
+            `sail_order_price` = #{order.price}
+        WHERE `sail_order_id` = #{order.id}
+    </update>
+
+    <delete id="deleteSailOrder">
+        DELETE FROM `sail_order`
+        WHERE `sail_order_id` = #{id}
+    </delete>
+
+</mapper>

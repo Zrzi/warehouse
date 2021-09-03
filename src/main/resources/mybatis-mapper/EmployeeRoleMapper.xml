@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.EmployeeRoleMapper">
+
+    <resultMap id="relation" type="com.database.warehouse.entity.EmployeeRole">
+        <id property="eid" column="employee_role_employee_id" />
+        <id property="rid" column="employee_role_role_id" />
+    </resultMap>
+
+    <select id="selectEmployeeRoleByKey" resultMap="relation">
+        SELECT `employee_role_employee_id`, `employee_role_role_id`
+        FROM `employee_role`
+        WHERE `employee_role_employee_id` = #{eid}
+          AND `employee_role_role_id` = #{rid}
+    </select>
+
+    <select id="selectEmployeeRoleByEid" parameterType="Long" resultMap="relation">
+        SELECT `employee_role_employee_id`, `employee_role_role_id`
+        FROM `employee_role`
+        WHERE `employee_role_employee_id` = #{eid}
+    </select>
+
+    <insert id="insertEmployeeRole" parameterType="com.database.warehouse.entity.EmployeeRole">
+        INSERT INTO `employee_role` (`employee_role_employee_id`, `employee_role_role_id`)
+        VALUES (#{relation.eid}, #{relation.rid})
+    </insert>
+
+    <delete id="deleteEmployeeRole">
+        DELETE FROM `employee_role`
+        WHERE `employee_role_employee_id` = #{eid}
+          AND `employee_role_role_id` = #{rid}
+    </delete>
+
+</mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.MaterialStorationMapper">
+
+    <resultMap id="storation" type="com.database.warehouse.entity.MaterialStoration">
+        <id property="wid" column="material_storation_warehouse_id" />
+        <id property="mid" column="material_storation_material_id" />
+        <id property="time" column="material_storation_time" />
+        <result property="number" column="material_storation_number" />
+        <result property="restNumber" column="material_storation_rest_number" />
+        <result property="price" column="material_storation_price" />
+    </resultMap>
+
+    <resultMap id="storationVO" type="com.database.warehouse.entity.vo.MaterialStorationVO">
+        <id property="wid" column="material_storation_warehouse_id" />
+        <result property="number" column="number" />
+        <association property="material" javaType="com.database.warehouse.entity.Material">
+            <id property="mid" column="m_id" />
+            <result property="name" column="m_name" />
+        </association>
+    </resultMap>
+
+    <select id="selectRestNumber" resultType="Integer">
+        SELECT SUM(`material_storation_rest_number`) AS `number`
+        FROM `material_storation`
+        WHERE `material_storation_warehouse_id` = #{wid}
+    </select>
+
+    <select id="selectSpecificRestNumber" resultType="Integer">
+        SELECT SUM(`material_storation_rest_number`) AS `number`
+        FROM `material_storation`
+        WHERE `material_storation_warehouse_id` = #{wid}
+          AND `material_storation_material_id` = #{mid}
+    </select>
+
+    <select id="selectMaterialStorationVO" resultMap="storationVO">
+        SELECT `material_storation`.`material_storation_warehouse_id`,
+               `material`.`material_id` AS `m_id`,
+               `material`.`material_name` AS `m_name`,
+                SUM(`material_storation`.`material_storation_rest_number`) AS `number`
+        FROM `material`
+        LEFT JOIN `material_storation`
+        ON `material_storation`.`material_storation_material_id` = `material`.`material_id`
+        WHERE `material_storation`.`material_storation_warehouse_id` = #{wid}
+        GROUP BY `material_storation`.`material_storation_warehouse_id`,
+                 `material`.`material_id`, `material`.`material_name`
+    </select>
+
+    <select id="selectMaterialStoration" resultMap="storation">
+        SELECT `material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`,
+               `material_storation_number`, `material_storation_rest_number`, `material_storation_price`
+        FROM `material_storation`
+        WHERE `material_storation_warehouse_id` = #{wid}
+          AND `material_storation_material_id` = #{mid}
+          AND `material_storation_time` = #{time}
+          AND `material_storation_rest_number` != 0
+    </select>
+
+    <select id="selectMaterialStorationByKey" resultMap="storation">
+        SELECT `material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`,
+               `material_storation_number`, `material_storation_rest_number`, `material_storation_price`
+        FROM `material_storation`
+        WHERE `material_storation_warehouse_id` = #{wid}
+          AND `material_storation_material_id` = #{mid}
+          AND `material_storation_rest_number` != 0
+    </select>
+
+    <select id="selectMaterialStorationByWid" parameterType="Long" resultMap="storation">
+        SELECT `material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`,
+               `material_storation_number`, `material_storation_rest_number`, `material_storation_price`
+        FROM `material_storation`
+        WHERE `material_storation_warehouse_id` = #{wid}
+          AND `material_storation_rest_number` != 0
+    </select>
+
+    <select id="selectMaterialStorationByMid" parameterType="Long" resultMap="storation">
+        SELECT `material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`,
+               `material_storation_number`, `material_storation_rest_number`, `material_storation_price`
+        FROM `material_storation`
+        WHERE `material_storation_material_id` = #{mid}
+    </select>
+
+    <insert id="insertMaterialStoration" parameterType="com.database.warehouse.entity.MaterialStoration">
+        INSERT INTO `material_storation` (`material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`, `material_storation_number`, `material_storation_rest_number`, `material_storation_price`)
+        VALUES (#{storation.wid}, #{storation.mid}, #{storation.time}, #{storation.number}, #{storation.number}, #{storation.price})
+    </insert>
+
+    <update id="updateMaterialStoration" parameterType="com.database.warehouse.entity.MaterialStoration">
+        UPDATE `material_storation`
+        SET `material_storation_number` = #{storation.number},
+            `material_storation_rest_number` = #{storation.restNumber},
+            `material_storation_price` = #{storation.price}
+        WHERE `material_storation_warehouse_id` = #{storation.wid}
+          AND `material_storation_material_id` = #{storation.mid}
+          AND `material_storation_time` = #{storation.time}
+    </update>
+
+    <delete id="deleteMaterialStoration">
+        DELETE FROM `material_storation`
+        WHERE `material_storation_warehouse_id` = #{storation.wid}
+          AND `material_storation_material_id` = #{storation.mid}
+          AND `material_storation_time` = #{storation.time}
+    </delete>
+
+</mapper>

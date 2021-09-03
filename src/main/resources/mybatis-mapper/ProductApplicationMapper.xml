@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.ProductApplicationMapper">
+
+    <resultMap id="application" type="com.database.warehouse.entity.ProductApplication">
+        <id property="id" column="product_application_id" />
+        <result property="pid" column="product_application_product_id" />
+        <result property="number" column="product_application_number" />
+        <result property="stored" column="product_application_stored" />
+    </resultMap>
+
+    <select id="selectProductApplicationById" parameterType="Long" resultMap="application">
+        SELECT `product_application_id`, `product_application_product_id`,
+               `product_application_number`, `product_application_stored`
+        FROM `product_application`
+        WHERE `product_application_id` = #{id}
+    </select>
+
+    <select id="selectUnstoredProductApplication" resultMap="application">
+        SELECT `product_application_id`, `product_application_product_id`,
+               `product_application_number`, `product_application_stored`
+        FROM `product_application`
+        WHERE `product_application_stored` = 0
+    </select>
+
+    <insert id="insertProductApplication" parameterType="com.database.warehouse.entity.ProductApplication"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="product_application_id">
+        INSERT INTO `product_application` (`product_application_product_id`, `product_application_number`, `product_application_stored`)
+        VALUES (#{application.pid}, #{application.number}, 0)
+    </insert>
+
+    <update id="updateProductApplication" parameterType="com.database.warehouse.entity.ProductApplication">
+        UPDATE `product_application`
+        SET `product_application_product_id` = #{application.pid},
+            `product_application_number` = #{application.number},
+            `product_application_stored` = #{application.stored}
+    </update>
+
+    <delete id="deleteProductApplication" parameterType="Long">
+        DELETE FROM `product_application`
+        WHERE `product_application_id` = #{id}
+    </delete>
+
+</mapper>

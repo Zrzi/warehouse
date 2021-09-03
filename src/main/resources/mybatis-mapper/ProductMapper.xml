@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.ProductMapper">
+
+    <resultMap id="product" type="com.database.warehouse.entity.Product">
+        <id property="pid" column="product_id" />
+        <result property="name" column="product_name" />
+    </resultMap>
+
+    <select id="selectNumber" resultType="Integer">
+        SELECT COUNT(`product_id`)
+        FROM `product`
+    </select>
+
+    <select id="selectProductByWid" resultMap="material">
+        SELECT `product_id`, `product_name`
+        FROM `product`
+        WHERE `product_id` IN (
+            SELECT `product_storation_product_id`
+            FROM `product_storation`
+            WHERE `product_storation_warehouse_id` = #{wid}
+              AND `product_storation_rest_number` != 0
+        )
+    </select>
+
+    <select id="selectProductByPid" parameterType="Long" resultMap="product">
+        SELECT `product_id`, `product_name`
+        FROM `product`
+        WHERE `product_id` = #{pid}
+          AND `valid` = 1
+    </select>
+
+    <select id="selectProducts" resultMap="product">
+        SELECT `product_id`, `product_name`
+        FROM `product`
+        WHERE `valid` = 1
+    </select>
+
+    <select id="selectPidByName" parameterType="String" resultType="Long">
+        SELECT `product_id`
+        FROM `product`
+        WHERE `product_name` = #{name}
+    </select>
+
+    <select id="selectValidPidByName" parameterType="String" resultType="Long">
+        SELECT `product_id`
+        FROM `product`
+        WHERE `product_name` = #{name}
+          AND `valid` = 1
+    </select>
+
+    <insert id="insertProduct" parameterType="com.database.warehouse.entity.Product"
+            useGeneratedKeys="true" keyProperty="pid" keyColumn="product_id">
+        INSERT INTO `product` (`product_name`, `valid`)
+        VALUES (#{product.name}, 1)
+    </insert>
+
+    <update id="updateProduct" parameterType="com.database.warehouse.entity.Product">
+        UPDATE `product`
+        SET `product_name` = #{product.name}
+        WHERE `product_id` = #{product.pid}
+    </update>
+
+    <update id="deleteProduct" parameterType="Long">
+        UPDATE `product`
+        SET `valid` = 0
+        WHERE `product_id` = #{pid}
+    </update>
+
+    <update id="activateProduct" parameterType="com.database.warehouse.entity.Product">
+        UPDATE `product`
+        SET `product_name` = #{product.name},
+            `valid` = 1
+        WHERE `product_id` = #{product.pid}
+    </update>
+
+</mapper>

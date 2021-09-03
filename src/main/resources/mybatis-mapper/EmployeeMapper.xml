@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.EmployeeMapper">
+
+    <resultMap id="employee" type="com.database.warehouse.entity.Employee">
+        <id property="eid" column="employee_id" />
+        <result property="username" column="employee_username" />
+        <result property="password" column="employee_password" />
+        <result property="name" column="employee_name" />
+        <result property="gender" column="employee_gender" />
+        <result property="age" column="employee_age" />
+        <result property="address" column="employee_address" />
+        <result property="did" column="employee_department_id" />
+    </resultMap>
+
+    <select id="selectEmployeeByEid" parameterType="Long" resultMap="employee">
+        SELECT `employee_id`, `employee_username`, `employee_password`, `employee_name`,
+               `employee_gender`, `employee_age`, `employee_address`, `employee_department_id`
+        FROM `employee`
+        WHERE `employee_id` = #{eid}
+    </select>
+
+    <select id="selectEmployees" resultMap="employee">
+        SELECT `employee_id`, `employee_username`, `employee_password`, `employee_name`,
+               `employee_gender`, `employee_age`, `employee_address`, `employee_department_id`
+        FROM `employee`
+    </select>
+
+    <select id="selectEmployeesByDid" parameterType="Long" resultMap="employee">
+        SELECT `employee_id`, `employee_username`, `employee_password`, `employee_name`,
+               `employee_gender`, `employee_age`, `employee_address`, `employee_department_id`
+        FROM `employee`
+        WHERE employee_department_id` = #{did}
+    </select>
+
+    <select id="selectEidByUsername" parameterType="String" resultType="Long">
+        SELECT `employee_id`
+        FROM `employee`
+        WHERE `employee_username` = #{username}
+    </select>
+
+    <select id="selectEmployeeByUsername" parameterType="String" resultMap="employee">
+        SELECT `employee_id`, `employee_username`, `employee_password`, `employee_name`,
+               `employee_gender`, `employee_age`, `employee_address`, `employee_department_id`
+        FROM `employee`
+        WHERE `employee_username` = #{username}
+    </select>
+
+    <select id="selectEidByName" parameterType="String" resultType="Long">
+        SELECT `employee_id`
+        FROM `employee`
+        WHERE `employee_name` = #{name}
+    </select>
+
+    <insert id="insertEmployee" parameterType="com.database.warehouse.entity.Employee"
+            useGeneratedKeys="true" keyColumn="eid" keyProperty="employee_id">
+        INSERT INTO `employee` (`employee_username`, `employee_password`, `employee_name`, `employee_gender`, `employee_age`, `employee_address`, `employee_department_id`)
+        VALUES (#{employee.username}, #{employee.password}, #{employee.name}, #{employee.gender}, #{employee.age}, #{employee.address}, #{employee.did})
+    </insert>
+
+    <update id="updateEmployee" parameterType="com.database.warehouse.entity.Employee">
+        UPDATE `employee`
+        SET `employee_name` = #{employee.name},
+            `employee_gender` = #{employee.gender},
+            `employee_age` = #{employee.age},
+            `employee_address` = #{employee.address},
+            `employee_department_id` = #{employee.did}
+        WHERE `employee_id` = #{employee.eid}
+    </update>
+
+    <update id="updatePassword" parameterType="com.database.warehouse.entity.Employee">
+        UPDATE `employee`
+        SET `employee_username` = #{employee.username},
+            `employee_password` = #{employee.password}
+        WHERE `employee_id` = #{employee.eid}
+    </update>
+
+    <delete id="deleteEmployee" parameterType="Long">
+        DELETE FROM `employee`
+        WHERE `employee_id` = #{eid}
+    </delete>
+
+</mapper>
