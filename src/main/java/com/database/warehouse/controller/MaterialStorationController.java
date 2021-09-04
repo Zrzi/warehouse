@@ -42,8 +42,10 @@ public class MaterialStorationController {
                                       @RequestParam("number") Integer number,
                                       @RequestParam("price") Double price) {
         try {
-            storeService.storeMaterial(mid, wid, number, price);
-            return ResponseData.success();
+            Long id = storeService.storeMaterial(mid, wid, number, price);
+            ResponseData responseData = ResponseData.success();
+            responseData.getData().put("id", id);
+            return responseData;
         } catch (InvalidInput e) {
             return ResponseData.fail(e.getMessage());
         }

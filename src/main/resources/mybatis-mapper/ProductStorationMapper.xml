@@ -11,7 +11,6 @@
         <result property="time" column="product_storation_time" />
         <result property="number" column="product_storation_number" />
         <result property="restNumber" column="product_storation_rest_number" />
-        <result property="price" column="product_storation_price" />
     </resultMap>
 
     <resultMap id="storationVO" type="com.database.warehouse.entity.vo.ProductStorationVO">
@@ -37,8 +36,7 @@
     </select>
 
     <select id="selectProductStorationVO" resultMap="storationVO">
-        SELECT `product_storation`.`product_storation_warehouse_id`,
-               `product`.`product_id` AS `p_id`,
+        SELECT `product`.`product_id` AS `p_id`,
                `product`.`product_name` AS `p_name`,
                 SUM(`product_storation`.`product_storation_rest_number`) AS `number`
         FROM `product_storation`
@@ -46,8 +44,7 @@
         ON `product_storation`.`product_storation_product_id` = `product`.`product_id`
         WHERE `product_storation`.`product_storation_warehouse_id` = #{wid}
           AND `product_storation`.`product_storation_rest_number` != 0
-        GROUP BY `product_storation`.`product_storation_warehouse_id`,
-                 `product`.`product_id`, `product`.`product_name`
+        GROUP BY `product`.`product_id`, `product`.`product_name`
     </select>
 
     <select id="selectProductStoration" resultMap="storation">
@@ -60,8 +57,7 @@
 
     <select id="selectProductStorationByKey" resultMap="storation">
         SELECT `product_storation_id`, `product_storation_warehouse_id`, `product_storation_product_id`,
-               `product_storation_time`, `product_storation_number`, `product_storation_rest_number`,
-               `product_storation_price`
+               `product_storation_time`, `product_storation_number`, `product_storation_rest_number`
         FROM `product_storation`
         WHERE `product_storation_warehouse_id` = #{wid}
           AND `product_storation_product_id` = #{pid}
@@ -70,8 +66,7 @@
 
     <select id="selectProductStorationByWid" parameterType="Long" resultMap="storation">
         SELECT `product_storation_id`, `product_storation_warehouse_id`, `product_storation_product_id`,
-               `product_storation_time`, `product_storation_number`, `product_storation_rest_number`,
-               `product_storation_price`
+               `product_storation_time`, `product_storation_number`, `product_storation_rest_number`
         FROM `product_storation`
         WHERE `product_storation_warehouse_id` = #{wid}
           AND `product_storation_rest_number` != 0
@@ -79,8 +74,7 @@
 
     <select id="selectProductStorationByPid" parameterType="Long" resultMap="storation">
         SELECT `product_storation_id`, `product_storation_warehouse_id`, `product_storation_product_id`,
-               `product_storation_time`, `product_storation_number`, `product_storation_rest_number`,
-               `product_storation_price`
+               `product_storation_time`, `product_storation_number`, `product_storation_rest_number`
         FROM `product_storation`
         WHERE `product_storation_product_id` = #{pid}
           AND `product_storation_rest_number` != 0
@@ -88,8 +82,8 @@
 
     <insert id="insertProductStoration" parameterType="com.database.warehouse.entity.ProductStoration"
             useGeneratedKeys="true" keyProperty="id" keyColumn="product_storation_id">
-        INSERT INTO `product_storation` (`product_storation_warehouse_id`, `product_storation_product_id`, `product_storation_time`, `product_storation_rest_number`, `product_storation_number`, `product_storation_price`)
-        VALUES (#{storation.wid}, #{storation.pid}, #{storation.time}, #{storation.number}, #{storation.number}, #{storation.price})
+        INSERT INTO `product_storation` (`product_storation_warehouse_id`, `product_storation_product_id`, `product_storation_time`, `product_storation_rest_number`, `product_storation_number`)
+        VALUES (#{storation.wid}, #{storation.pid}, #{storation.time}, #{storation.number}, #{storation.number})
     </insert>
 
     <update id="updateProductStoration" parameterType="com.database.warehouse.entity.MaterialStoration">
@@ -98,8 +92,7 @@
             `product_storation_product_id` = #{storation.pid},
             `product_storation_time` = #{storation.time},
             `product_storation_number` = #{storation.number},
-            `product_storation_rest_number` = #{storation.restNumber},
-            `product_storation_price` = #{storation.price}
+            `product_storation_rest_number` = #{storation.restNumber}
         WHERE `product_storation_id` = #{storation.id}
     </update>
 

@@ -78,9 +78,9 @@ public class PurchaseOrderService {
                 purchaseOrder.getRestNumber() == 0 || number > purchaseOrder.getRestNumber()) {
             throw new InvalidInput();
         }
-        MaterialStoration materialStoration =
-                new MaterialStoration(purchaseOrder.getMid(), wid, LocalTimeString.getLocalTimeNow(),
-                        number, number, purchaseOrder.getPrice());
+        MaterialStoration materialStoration = new MaterialStoration();
+        materialStoration.setMid(purchaseOrder.getMid()).setWid(wid).setTime(LocalTimeString.getLocalTimeNow())
+                .setNumber(number).setRestNumber(number).setPrice(purchaseOrder.getPrice());
         materialStorationMapper.insertMaterialStoration(materialStoration);
         int tempNumber = purchaseOrder.getRestNumber() - number;
         purchaseOrder.setRestNumber(tempNumber);

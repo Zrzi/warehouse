@@ -14,7 +14,7 @@
         FROM `product`
     </select>
 
-    <select id="selectProductByWid" resultMap="material">
+    <select id="selectProductByWid" resultMap="product">
         SELECT `product_id`, `product_name`
         FROM `product`
         WHERE `product_id` IN (

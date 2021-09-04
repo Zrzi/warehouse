@@ -30,7 +30,7 @@ public class StoreService {
     private EmployeeMapper employeeMapper;
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public Long storeProduct(Long pid, Long wid, Integer number, Double price)
+    public Long storeProduct(Long pid, Long wid, Integer number)
             throws InvalidInput {
         Warehouse warehouse = warehouseMapper.selectWarehouseByWid(wid);
         Integer store = getRestProductNumber(wid);
@@ -40,25 +40,25 @@ public class StoreService {
         }
         ProductStoration productStoration = new ProductStoration();
         productStoration.setPid(pid).setWid(wid).setTime(LocalTimeString.getLocalTimeNow())
-                .setNumber(number).setRestNumber(number).setPrice(price);
+                .setNumber(number).setRestNumber(number);
         productStorationMapper.insertProductStoration(productStoration);
         return productStoration.getId();
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void storeMaterial(Long mid, Long wid, Integer number, Double price)
+    public Long storeMaterial(Long mid, Long wid, Integer number, Double price)
             throws InvalidInput {
         Warehouse warehouse = warehouseMapper.selectWarehouseByWid(wid);
         Integer store = getRestMaterialNumber(wid);
         Integer max = warehouse.getMax();
-        if (store + number <= max) {
-            MaterialStoration materialStoration =
-                    new MaterialStoration(mid, wid, LocalTimeString.getLocalTimeNow(),
-                            number, number, price);
-            materialStorationMapper.insertMaterialStoration(materialStoration);
-        } else {
+        if (store + number > max) {
             throw new InvalidInput();
         }
+        MaterialStoration materialStoration = new MaterialStoration();
+        materialStoration.setWid(wid).setMid(mid).setTime(LocalTimeString.getLocalTimeNow())
+                .setNumber(number).setRestNumber(number).setPrice(price);
+        materialStorationMapper.insertMaterialStoration(materialStoration);
+        return materialStoration.getId();
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -150,7 +150,7 @@ public class StoreService {
         }
         ProductStoration newStoration = new ProductStoration();
         productStoration.setPid(pid).setWid(newWid).setTime(LocalTimeString.getLocalTimeNow())
-                .setNumber(number).setRestNumber(number).setPrice(productStoration.getPrice());
+                .setNumber(number).setRestNumber(number);
         productStoration.setRestNumber(productStoration.getRestNumber() - number);
         productStorationMapper.updateProductStoration(productStoration);
         productStorationMapper.insertProductStoration(newStoration);
@@ -170,9 +170,9 @@ public class StoreService {
         if (getRestMaterialNumber(newWid) + number > warehouse.getMax()) {
             throw new InvalidInput();
         }
-        MaterialStoration newStoration =
-                new MaterialStoration(newWid, mid, LocalTimeString.getLocalTimeNow(),
-                        number, number, materialStoration.getPrice());
+        MaterialStoration newStoration = new MaterialStoration();
+        newStoration.setWid(newWid).setMid(mid).setTime(LocalTimeString.getLocalTimeNow())
+                .setNumber(number).setRestNumber(number).setPrice(materialStoration.getPrice());
         materialStoration.setRestNumber(materialStoration.getRestNumber() - number);
         materialStorationMapper.updateMaterialStoration(materialStoration);
         materialStorationMapper.insertMaterialStoration(newStoration);
@@ -225,6 +225,9 @@ public class StoreService {
         for (Warehouse warehouse : warehouses) {
             Long wid = warehouse.getWid();
             List<MaterialStorationVO> voList = materialStorationMapper.selectMaterialStorationVO(wid);
+            for (MaterialStorationVO materialStorationVO : voList) {
+                materialStorationVO.setWid(wid);
+            }
             result.addAll(voList);
         }
         return result;
@@ -237,6 +240,9 @@ public class StoreService {
         for (Warehouse warehouse : warehouses) {
             Long wid = warehouse.getWid();
             List<ProductStorationVO> voList = productStorationMapper.selectProductStorationVO(wid);
+            for (ProductStorationVO productStorationVO : voList) {
+                productStorationVO.setWid(wid);
+            }
             result.addAll(voList);
         }
         return result;

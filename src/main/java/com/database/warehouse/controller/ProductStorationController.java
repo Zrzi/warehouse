@@ -43,30 +43,6 @@ public class ProductStorationController {
     }
 
     @ResponseBody
-    @PostMapping("/storeProduct")
-    @PreAuthorize("hasRole('ROLE_WAREHOUSE_ADMIN')")
-    public ResponseData storeProduct(@RequestParam("id") Long id,
-                                     @RequestParam("wid") Long wid,
-                                     @RequestParam("number") Integer number,
-                                     @RequestParam("price") Double price) {
-        try {
-            ProductApplication application =
-                    productApplicationService.findProductApplicationById(id);
-            if (application.getNumber() < number) {
-                throw new InvalidInput();
-            }
-            Integer restNumber = productApplicationService.storeProduct(id, number);
-            Long pid = storeService.storeProduct(application.getPid(), wid, number, price);
-            ResponseData responseData = ResponseData.success();
-            responseData.getData().put("id", pid);
-            responseData.getData().put("number", restNumber);
-            return responseData;
-        } catch (ProductApplicationNotFound | InvalidInput e) {
-            return ResponseData.fail(e.getMessage());
-        }
-    }
-
-    @ResponseBody
     @DeleteMapping("/removeProduct")
     @PreAuthorize("hasRole('ROLE_SAILS_DEPT')")
     public ResponseData removeProduct(@RequestParam("name") String name,

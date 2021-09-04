@@ -13,7 +13,6 @@ import lombok.experimental.Accessors;
 public class MaterialStorationVO {
 
     private Long wid;
-    private Long mid;
     private Material material;
     private Integer number;
 

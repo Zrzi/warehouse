@@ -46,10 +46,6 @@ public class SailOrderService {
         if (localDateTime.plusMonths(1).isBefore(LocalDateTime.now())) {
             throw new DeleteUnable();
         }
-        HistoryRecord historyRecord =
-                new HistoryRecord(sailOrder.getType(), sailOrder.toString(),
-                        LocalTimeString.getLocalTimeNow());
-        historyRecordMapper.insertHistoryRecord(historyRecord);
         sailOrderMapper.deleteSailOrder(id);
         return sailOrder;
     }

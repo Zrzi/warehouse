@@ -17,7 +17,6 @@ public class ProductStoration {
     private String time;
     private Integer number;
     private Integer restNumber;
-    private Double price;
 
     public String getTypeName() {
         return "Product_Storation";

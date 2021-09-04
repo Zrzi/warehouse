@@ -46,13 +46,14 @@ CREATE TABLE `material`(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `material_storation`(
-    `material_storation_warehouse_id` BIGINT,
-    `material_storation_material_id` BIGINT,
+    `material_storation_id` BIGINT AUTO_INCREMENT,
+    `material_storation_warehouse_id` BIGINT NOT NULL,
+    `material_storation_material_id` BIGINT NOT NULL,
     `material_storation_time` VARCHAR(32),
     `material_storation_number` INTEGER NOT NULL,
     `material_storation_rest_number` INTEGER NOT NULL,
     `material_storation_price` DECIMAL(11, 2) NOT NULL,
-    PRIMARY KEY (`material_storation_warehouse_id`, `material_storation_material_id`)
+    PRIMARY KEY (`material_storation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `product`(
@@ -84,7 +85,6 @@ CREATE TABLE `product_storation`(
     `product_storation_time` VARCHAR(32) NOT NULL,
     `product_storation_number` INTEGER NOT NULL,
     `product_storation_rest_number` INTEGER NOT NULL,
-    `product_storation_price` DECIMAL(11, 2) NOT NULL,
     PRIMARY KEY (`product_storation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -114,6 +114,7 @@ CREATE TABLE `sail_order`(
     `sail_order_time` VARCHAR(32) NOT NULL,
     `sail_order_number` INTEGER NOT NULL,
     `sail_order_price` DECIMAL(11, 2) NOT NULL,
+    `valid` INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (`sail_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -198,3 +199,41 @@ VALUES (5, 5);
 
 INSERT INTO `employee_role` (`employee_role_employee_id`, `employee_role_role_id`)
 VALUES (6, 6);
+
+/* 材料 */
+INSERT INTO `material` (`material_name`, `valid`)
+VALUES ('材料1', 1);
+
+INSERT INTO `material` (`material_name`, `valid`)
+VALUES ('材料2', 1);
+
+INSERT INTO `material` (`material_name`, `valid`)
+VALUES ('材料3', 1);
+
+INSERT INTO `material` (`material_name`, `valid`)
+VALUES ('材料4', 1);
+
+INSERT INTO `material` (`material_name`, `valid`)
+VALUES ('材料5', 1);
+
+INSERT INTO `material` (`material_name`, `valid`)
+VALUES ('材料6', 1);
+
+/* 材料 */
+INSERT INTO `product` (`product_name`, `valid`)
+VALUES ('产品1', 1);
+
+INSERT INTO `product` (`product_name`, `valid`)
+VALUES ('产品2', 1);
+
+INSERT INTO `product` (`product_name`, `valid`)
+VALUES ('产品3', 1);
+
+INSERT INTO `product` (`product_name`, `valid`)
+VALUES ('产品4', 1);
+
+INSERT INTO `product` (`product_name`, `valid`)
+VALUES ('产品5', 1);
+
+INSERT INTO `product` (`product_name`, `valid`)
+VALUES ('产品6', 1);

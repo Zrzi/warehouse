@@ -101,7 +101,7 @@
                   var size = result.data.size;
                   for (var index=0; index<size; index++) {
                     var option = new Option();
-                    option.setAttribute("value", products[index].mid);
+                    option.setAttribute("value", products[index].pid);
                     option.innerText = products[index].name;
                     select.options.add(option);
                   }
@@ -186,15 +186,6 @@
           }
 
         });
-</script>
-<script>
-  var _hmt = _hmt || [];
-  (function() {
-    var hm = document.createElement("script");
-    hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
 </script>
 </body>
 </html>

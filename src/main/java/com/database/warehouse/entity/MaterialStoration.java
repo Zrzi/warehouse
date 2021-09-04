@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 @ToString
 public class MaterialStoration {
 
+    private Long id;
     private Long wid;
     private Long mid;
     private String time;

@@ -2,6 +2,7 @@ package com.database.warehouse.controller;
 
 import com.database.warehouse.entity.ProductApplication;
 import com.database.warehouse.entity.ResponseData;
+import com.database.warehouse.exception.InvalidInput;
 import com.database.warehouse.service.ProductApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +46,22 @@ public class ProductApplicationController {
     public ResponseData deleteProductApplication(@RequestParam("id") Long id) {
         productApplicationService.removeProductApplication(id);
         return ResponseData.success();
+    }
+
+    @ResponseBody
+    @PostMapping("/storeApplication")
+    @PreAuthorize("hasRole('ROLE_WAREHOUSE_ADMIN')")
+    public ResponseData storeApplication(@RequestParam("id") Long id,
+                                         @RequestParam("wid") Long wid,
+                                         @RequestParam("number") Integer number) {
+        try {
+            int restNumber = productApplicationService.storeProductApplication(id, wid, number);
+            ResponseData responseData = ResponseData.success();
+            responseData.getData().put("number", restNumber);
+            return responseData;
+        } catch (InvalidInput e) {
+            return ResponseData.fail(e.getMessage());
+        }
     }
 
 }

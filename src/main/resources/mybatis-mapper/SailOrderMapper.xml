@@ -18,6 +18,7 @@
                `sail_order_time`, `sail_order_number`, `sail_order_price`
         FROM `sail_order`
         WHERE `sail_order_id` = #{id}
+          AND `valid` = 1
     </select>
 
     <select id="selectSailOrderByEid" parameterType="Long" resultMap="order">
@@ -25,6 +26,7 @@
                `sail_order_time`, `sail_order_number`, `sail_order_price`
         FROM `sail_order`
         WHERE `sail_order_employee_id` = #{eid}
+          AND `valid` = 1
     </select>
 
     <select id="selectSailOrderByPid" parameterType="Long" resultMap="order">
@@ -32,18 +34,20 @@
                `sail_order_time`, `sail_order_number`, `sail_order_price`
         FROM `sail_order`
         WHERE `sail_order_product_id` = #{pid}
+          AND `valid` = 1
     </select>
 
     <select id="selectSailOrder" resultMap="order">
         SELECT `sail_order_id`, `sail_order_employee_id`, `sail_order_product_id`,
                `sail_order_time`, `sail_order_number`, `sail_order_price`
         FROM `sail_order`
+        WHERE `valid` = 1
     </select>
 
     <insert id="insertSailOrder" parameterType="com.database.warehouse.entity.SailOrder"
             useGeneratedKeys="true" keyProperty="id" keyColumn="sail_order_id">
-        INSERT INTO `sail_order` (`sail_order_employee_id`, `sail_order_product_id`, `sail_order_time`, `sail_order_number`, `sail_order_price`)
-        VALUES (#{order.eid}, #{order.pid}, #{order.time}, #{order.number}, #{order.price})
+        INSERT INTO `sail_order` (`sail_order_employee_id`, `sail_order_product_id`, `sail_order_time`, `sail_order_number`, `sail_order_price`, `valid`)
+        VALUES (#{order.eid}, #{order.pid}, #{order.time}, #{order.number}, #{order.price}, 1)
     </insert>
 
     <update id="updateSailOrder" parameterType="com.database.warehouse.entity.SailOrder">
@@ -53,9 +57,10 @@
         WHERE `sail_order_id` = #{order.id}
     </update>
 
-    <delete id="deleteSailOrder">
-        DELETE FROM `sail_order`
+    <update id="deleteSailOrder">
+        UPDATE `sail_order`
+        SET `valid` = 0
         WHERE `sail_order_id` = #{id}
-    </delete>
+    </update>
 
 </mapper>

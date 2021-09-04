@@ -46,15 +46,9 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="price" class="layui-form-label">
-                    <span class="x-red">*</span>单价</label>
-                <div class="layui-input-inline">
-                    <input type="text" id="price" name="price" required="" lay-verify="required|number" autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-form-item">
                 <label for="button" class="layui-form-label"></label>
-                <button id="button" class="layui-btn" lay-filter="add" lay-submit="">存储</button></div>
+                <button id="button" class="layui-btn" lay-filter="add" lay-submit="">存储</button>
+            </div>
         </form>
     </div>
 </div>
@@ -73,16 +67,15 @@
                 console.log(data);
                 $.ajax({
                     type: "post",
-                    url: "/storeProduct",
+                    url: "/storeApplication",
                     data: {
                         id: data.field.id,
                         wid: data.field.warehouse,
-                        number: data.field.number,
-                        price: data.field.price
+                        number: data.field.number
                     },
                     success(result) {
                         if (result.code === 200) {
-                            layer.alert("存储成功", {
+                            layer.alert("存储成功，剩余为储存数量为" + result.data.number, {
                                     icon: 6
                                 },
                                 function() {
@@ -139,15 +132,5 @@
 
     });
 </script>
-<script>
-    var _hmt = _hmt || [];
-    (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-    })();
-</script>
 </body>
-
 </html>

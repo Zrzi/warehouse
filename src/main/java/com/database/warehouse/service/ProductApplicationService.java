@@ -1,9 +1,14 @@
 package com.database.warehouse.service;
 
 import com.database.warehouse.entity.ProductApplication;
+import com.database.warehouse.entity.ProductStoration;
+import com.database.warehouse.entity.Warehouse;
 import com.database.warehouse.exception.InvalidInput;
 import com.database.warehouse.exception.ProductApplicationNotFound;
 import com.database.warehouse.mapper.ProductApplicationMapper;
+import com.database.warehouse.mapper.ProductStorationMapper;
+import com.database.warehouse.mapper.WarehouseMapper;
+import com.database.warehouse.utils.LocalTimeString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +20,11 @@ public class ProductApplicationService {
 
     @Autowired
     private ProductApplicationMapper productApplicationMapper;
+    @Autowired
+    private WarehouseMapper warehouseMapper;
+    @Autowired
+    private ProductStorationMapper productStorationMapper;
+
 
     public ProductApplication findProductApplicationById(Long id)
             throws ProductApplicationNotFound{
@@ -37,24 +47,26 @@ public class ProductApplicationService {
         return productApplication.getId();
     }
 
-    @Transactional(rollbackFor = RuntimeException.class)
-    public Integer storeProduct(Long id, Integer number)
-            throws ProductApplicationNotFound, InvalidInput {
-        ProductApplication productApplication =
-                productApplicationMapper.selectProductApplicationById(id);
-        if (productApplication == null) {
-            throw new ProductApplicationNotFound();
-        }
-        if (productApplication.getNumber() < number) {
+    public int storeProductApplication(Long id, Long wid, Integer number)
+            throws InvalidInput {
+        Warehouse warehouse = warehouseMapper.selectWarehouseByWid(wid);
+        ProductApplication productApplication = productApplicationMapper.selectProductApplicationById(id);
+        Integer restNumber = productStorationMapper.selectRestNumber(wid);
+        if (productApplication == null || restNumber + number > warehouse.getMax() ||
+                productApplication.getNumber() == 0 || number > productApplication.getNumber()) {
             throw new InvalidInput();
         }
-        int restNumber = productApplication.getNumber() - number;
-        productApplication.setNumber(restNumber);
-        if (restNumber == 0) {
+        ProductStoration productStoration = new ProductStoration();
+        productStoration.setWid(wid).setPid(productApplication.getPid())
+                .setTime(LocalTimeString.getLocalTimeNow()).setNumber(number).setRestNumber(number);
+        productStorationMapper.insertProductStoration(productStoration);
+        int tempNumber = productApplication.getNumber() - number;
+        productApplication.setNumber(tempNumber);
+        if (tempNumber == 0) {
             productApplication.setStored(1);
         }
         productApplicationMapper.updateProductApplication(productApplication);
-        return restNumber;
+        return tempNumber;
     }
 
     public void removeProductApplication(Long id) {

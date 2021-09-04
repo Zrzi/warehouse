@@ -5,6 +5,7 @@
 <mapper namespace="com.database.warehouse.mapper.MaterialStorationMapper">
 
     <resultMap id="storation" type="com.database.warehouse.entity.MaterialStoration">
+        <id property="id" column="material_storation_id" />
         <id property="wid" column="material_storation_warehouse_id" />
         <id property="mid" column="material_storation_material_id" />
         <id property="time" column="material_storation_time" />
@@ -36,16 +37,15 @@
     </select>
 
     <select id="selectMaterialStorationVO" resultMap="storationVO">
-        SELECT `material_storation`.`material_storation_warehouse_id`,
-               `material`.`material_id` AS `m_id`,
+        SELECT `material`.`material_id` AS `m_id`,
                `material`.`material_name` AS `m_name`,
                 SUM(`material_storation`.`material_storation_rest_number`) AS `number`
-        FROM `material`
-        LEFT JOIN `material_storation`
+        FROM `material_storation`
+        LEFT JOIN `material`
         ON `material_storation`.`material_storation_material_id` = `material`.`material_id`
         WHERE `material_storation`.`material_storation_warehouse_id` = #{wid}
-        GROUP BY `material_storation`.`material_storation_warehouse_id`,
-                 `material`.`material_id`, `material`.`material_name`
+          AND `material_storation`.`material_storation_rest_number` != 0
+        GROUP BY `material`.`material_id`, `material`.`material_name`
     </select>
 
     <select id="selectMaterialStoration" resultMap="storation">
@@ -82,7 +82,8 @@
         WHERE `material_storation_material_id` = #{mid}
     </select>
 
-    <insert id="insertMaterialStoration" parameterType="com.database.warehouse.entity.MaterialStoration">
+    <insert id="insertMaterialStoration" parameterType="com.database.warehouse.entity.MaterialStoration"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="material_storation_id">
         INSERT INTO `material_storation` (`material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`, `material_storation_number`, `material_storation_rest_number`, `material_storation_price`)
         VALUES (#{storation.wid}, #{storation.mid}, #{storation.time}, #{storation.number}, #{storation.number}, #{storation.price})
     </insert>
