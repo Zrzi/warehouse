@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Bean
-    public FormContentFilter httpPutFormContentFilter() {
+    public FormContentFilter formContentFilter() {
         return new FormContentFilter();
     }
 

@@ -36,8 +36,8 @@
           <span class="x-red">*</span>类型
         </label>
         <div class="layui-input-block">
-          <input type="radio" name="type" lay-skin="primary" title="产品仓库" value="product" checked="checked">
-          <input type="radio" name="type" lay-skin="primary" title="原材料仓库" value="material">
+          <input type="radio" name="type" lay-skin="primary" title="产品仓库" value="产品仓库" checked="checked">
+          <input type="radio" name="type" lay-skin="primary" title="原材料仓库" value="原材料仓库">
         </div>
       </div>
       <div class="layui-form-item">
@@ -61,19 +61,12 @@
           form.on('submit(add)',
                   function(data) {
                     console.log(data);
-                    var wid = data.field.warehouse;
-                    var type;
-                    if (data.field.type === 'product') {
-                      type = '产品仓库';
-                    } else if (data.field.type === 'material') {
-                      type = '原材料仓库';
-                    }
                     $.ajax({
                       type: "put",
                       url: "/warehouse/type",
                       data: {
-                        wid: wid,
-                        type: type
+                        wid: data.field.warehouse,
+                        type: data.field.type
                       },
                       success(result) {
                         if (result.code === 200) {
@@ -82,7 +75,6 @@
                                   },
                                   function() {
                                     xadmin.close();
-                                    xadmin.father_reload();
                                   });
                         } else {
                           layer.alert(result.message, {
@@ -90,7 +82,6 @@
                                   },
                                   function() {
                                     xadmin.close();
-                                    xadmin.father_reload();
                                   })
                         }
                       },
@@ -100,7 +91,6 @@
                                 },
                                 function() {
                                   xadmin.close();
-                                  xadmin.father_reload();
                                 }
                         )
                       }
@@ -108,7 +98,7 @@
                     return false;
                   });
 
-          window.onload = function() {
+          $(document).ready(function() {
             var select = document.getElementById("warehouse");
             $.ajax({
               type: "get",
@@ -128,10 +118,10 @@
                 }
               },
               error(message) {
-                alert(message);
+                layer.msg(message, {icon: 1, time: 1000});
               }
             })
-          }
+          })
 
         });
 </script>

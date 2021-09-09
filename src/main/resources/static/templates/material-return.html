@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+    <meta charset="UTF-8">
+    <title>还料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="stylesheet" href="../css/xadmin.css">
+    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <!--<div class="layui-form-item">
+                <label for="id" class="layui-form-label">
+                    <span class="x-red">*</span>id
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="id" name="id" required="" lay-verify="required|number"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>-->
+            <div class="layui-form-item">
+                <label for="number" class="layui-form-label">
+                    <span class="x-red">*</span>数量
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="number" name="number" required="" lay-verify="required|number"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>损坏情况
+                </label>
+                <div class="layui-input-block">
+                    <input type="radio" name="state" lay-skin="primary" title="有损坏" value="0" checked="checked">
+                    <input type="radio" name="state" lay-skin="primary" title="无损坏" value="1">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="button" class="layui-form-label">
+                </label>
+                <button  class="layui-btn" id="button" lay-filter="add" lay-submit="">
+                    退料
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+    layui.use(['form', 'layer'],
+        function() {
+            $ = layui.jquery;
+            var form = layui.form;
+            var layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({});
+
+            //监听提交
+            form.on('submit(add)',
+                function(data) {
+                    console.log(data);
+                    $.ajax({
+                        type: "put",
+                        url: "/retrievalRecord",
+                        data: {
+                            id: window.localStorage.getItem("id"),
+                            number: data.field.number,
+                            state: data.field.state
+                        },
+                        success(result) {
+                            if (result.code === 200) {
+                                layer.alert("还料成功", {
+                                        icon: 6
+                                    },
+                                    function() {
+                                        xadmin.close();
+                                    });
+                            } else {
+                                layer.alert(result.message, {
+                                        icon: 6
+                                    },
+                                    function() {
+                                        xadmin.close();
+                                    });
+                            }
+                        },
+                        error(message) {
+                            layer.alert(message, {
+                                    icon: 6
+                                },
+                                function() {
+                                    xadmin.close();
+                                });
+                        }
+                    })
+                    return false;
+                });
+
+        });
+</script>
+</body>
+</html>

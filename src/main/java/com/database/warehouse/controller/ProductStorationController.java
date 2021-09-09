@@ -1,5 +1,6 @@
 package com.database.warehouse.controller;
 
+import com.database.warehouse.entity.Employee;
 import com.database.warehouse.entity.ProductApplication;
 import com.database.warehouse.entity.ResponseData;
 import com.database.warehouse.entity.SailOrder;
@@ -12,6 +13,7 @@ import com.database.warehouse.service.ProductApplicationService;
 import com.database.warehouse.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,13 +47,14 @@ public class ProductStorationController {
     @ResponseBody
     @DeleteMapping("/removeProduct")
     @PreAuthorize("hasRole('ROLE_SAILS_DEPT')")
-    public ResponseData removeProduct(@RequestParam("name") String name,
-                                      @RequestParam("pid") Long pid,
+    public ResponseData removeProduct(@RequestParam("pid") Long pid,
                                       @RequestParam("wid") Long wid,
                                       @RequestParam("number") Integer number,
-                                      @RequestParam("price") Double price) {
+                                      @RequestParam("price") Double price,
+                                      Authentication authentication) {
         try {
-            storeService.removeProduct(name, wid, pid, number, price);
+            Employee employee = (Employee) authentication.getPrincipal();
+            storeService.removeProduct(employee.getEid(), wid, pid, number, price);
             return ResponseData.success();
         } catch (EmployeeNotFound | InvalidInput e) {
             return ResponseData.fail(e.getMessage());

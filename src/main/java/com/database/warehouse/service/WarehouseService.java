@@ -3,6 +3,7 @@ package com.database.warehouse.service;
 import com.database.warehouse.entity.MaterialStoration;
 import com.database.warehouse.entity.ProductStoration;
 import com.database.warehouse.entity.Warehouse;
+import com.database.warehouse.entity.vo.WarehouseVO;
 import com.database.warehouse.exception.*;
 import com.database.warehouse.mapper.MaterialStorationMapper;
 import com.database.warehouse.mapper.ProductStorationMapper;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,8 +25,25 @@ public class WarehouseService {
     @Autowired
     private MaterialStorationMapper materialStorationMapper;
 
-    public List<Warehouse> findWarehouse() {
-        return warehouseMapper.selectWarehouse();
+    @Transactional(rollbackFor = RuntimeException.class)
+    public List<WarehouseVO> findWarehouse() {
+        List<Warehouse> warehouses = warehouseMapper.selectWarehouse();
+        List<WarehouseVO> voList = new ArrayList<>();
+        for (Warehouse warehouse : warehouses) {
+            WarehouseVO warehouseVO = new WarehouseVO(warehouse);
+            Integer number = null;
+            if ("原材料仓库".equals(warehouse.getType())) {
+                number = materialStorationMapper.selectRestNumber(warehouse.getWid());
+            } else if ("产品仓库".equals(warehouse.getType())) {
+                number = productStorationMapper.selectRestNumber(warehouse.getWid());
+            }
+            if (number == null) {
+                number = 0;
+            }
+            warehouseVO.setNumber(number);
+            voList.add(warehouseVO);
+        }
+        return voList;
     }
 
     public List<Warehouse> findMaterialWarehouses() {

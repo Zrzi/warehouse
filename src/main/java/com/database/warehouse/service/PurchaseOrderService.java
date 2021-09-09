@@ -1,5 +1,6 @@
 package com.database.warehouse.service;
 
+import com.database.warehouse.entity.Employee;
 import com.database.warehouse.entity.MaterialStoration;
 import com.database.warehouse.entity.PurchaseOrder;
 import com.database.warehouse.entity.Warehouse;
@@ -56,12 +57,7 @@ public class PurchaseOrderService {
         purchaseOrderMapper.deletePurchaseOrder(id);
     }
 
-    @Transactional(rollbackFor = RuntimeException.class)
-    public Long addPurchaseOrder(String name, Long mid, Integer number, Double price) {
-        Long eid = employeeMapper.selectEidByName(name);
-        if (eid == null) {
-            throw new EmployeeNotFound();
-        }
+    public Long addPurchaseOrder(Long eid, Long mid, Integer number, Double price) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setEid(eid).setMid(mid).setNumber(number).setPrice(price);
         purchaseOrder.setTime(LocalTimeString.getLocalTimeNow());

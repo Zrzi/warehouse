@@ -21,4 +21,8 @@ public class LocalTimeString {
         return DateTimeFormatter.ofPattern(costFormat).format(LocalDateTime.now());
     }
 
+    public static String getNextMonth() {
+        return DateTimeFormatter.ofPattern(costFormat).format(LocalDateTime.now().minusMonths(1));
+    }
+
 }

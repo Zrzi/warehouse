@@ -10,8 +10,12 @@ public interface CostMapper {
 
     Double selectCost(@Param("date") String date);
 
+    Integer selectIsChecked(@Param("date") String date);
+
     Integer insertCost(@Param("date") String date, @Param("cost") Double cost);
 
     Integer updateCost(@Param("date") String date, @Param("cost") Double cost);
+
+    Integer checkCost(@Param("date") String date);
 
 }

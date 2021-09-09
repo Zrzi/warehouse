@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -28,6 +29,8 @@ public class StoreService {
     private SailOrderMapper sailOrderMapper;
     @Autowired
     private EmployeeMapper employeeMapper;
+    @Autowired
+    private RetrievalRecordMapper retrievalRecordMapper;
 
     @Transactional(rollbackFor = RuntimeException.class)
     public Long storeProduct(Long pid, Long wid, Integer number)
@@ -62,12 +65,8 @@ public class StoreService {
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void removeProduct(String name, Long wid, Long pid, Integer number, Double price)
+    public void removeProduct(Long eid, Long wid, Long pid, Integer number, Double price)
             throws EmployeeNotFound, InvalidInput {
-        Long eid = employeeMapper.selectEidByName(name);
-        if (eid == null) {
-            throw new EmployeeNotFound();
-        }
         Integer restNumber = productStorationMapper.selectSpecificRestNumber(wid, pid);
         if (restNumber < number) {
             throw new InvalidInput();
@@ -108,29 +107,37 @@ public class StoreService {
         } else {
             materialStorations.sort((o1, o2) -> Integer.compare(0, o1.getTime().compareTo(o2.getTime())));
         }
-        double price = 0.0;
+        BigDecimal price = BigDecimal.ZERO;
+        String date = LocalTimeString.getCostString();
         for (MaterialStoration materialStoration : materialStorations) {
             Integer tempNumber = materialStoration.getRestNumber();
             Double tempPrice = materialStoration.getPrice();
             if (number >= tempNumber) {
-                price += tempNumber * tempPrice;
+                RetrievalRecord record = new RetrievalRecord();
+                record.setNumber(tempNumber).setPrice(tempPrice).setMid(mid).setTime(date);
+                retrievalRecordMapper.insertRetrievalRecord(record);
+                BigDecimal temp = BigDecimal.valueOf(tempNumber).multiply(BigDecimal.valueOf(tempPrice));
+                price = price.add(temp);
                 materialStoration.setRestNumber(0);
                 materialStorationMapper.updateMaterialStoration(materialStoration);
                 number = number-tempNumber;
             } else {
-                price += number * tempPrice;
+                RetrievalRecord record = new RetrievalRecord();
+                record.setNumber(number).setPrice(tempPrice).setMid(mid).setTime(date);
+                retrievalRecordMapper.insertRetrievalRecord(record);
+                BigDecimal temp = BigDecimal.valueOf(number).multiply(BigDecimal.valueOf(tempPrice));
+                price = price.add(temp);
                 materialStoration.setRestNumber(tempNumber - number);
                 materialStorationMapper.updateMaterialStoration(materialStoration);
                 number = 0;
                 break;
             }
         }
-        String date = LocalTimeString.getCostString();
         Double cost = costMapper.selectCost(date);
         if (cost == null) {
-            costMapper.insertCost(date, price);
+            costMapper.insertCost(date, price.doubleValue());
         } else {
-            costMapper.updateCost(date, cost + price);
+            costMapper.updateCost(date, BigDecimal.valueOf(cost).add(price).doubleValue());
         }
     }
 

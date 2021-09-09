@@ -1,13 +1,10 @@
 package com.database.warehouse.service;
 
-import com.database.warehouse.entity.ProductApplication;
-import com.database.warehouse.entity.ProductStoration;
-import com.database.warehouse.entity.Warehouse;
+import com.database.warehouse.entity.*;
 import com.database.warehouse.exception.InvalidInput;
 import com.database.warehouse.exception.ProductApplicationNotFound;
-import com.database.warehouse.mapper.ProductApplicationMapper;
-import com.database.warehouse.mapper.ProductStorationMapper;
-import com.database.warehouse.mapper.WarehouseMapper;
+import com.database.warehouse.exception.UpdateUnable;
+import com.database.warehouse.mapper.*;
 import com.database.warehouse.utils.LocalTimeString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +21,10 @@ public class ProductApplicationService {
     private WarehouseMapper warehouseMapper;
     @Autowired
     private ProductStorationMapper productStorationMapper;
+    @Autowired
+    private ProductMaterialMapper productMaterialMapper;
+    @Autowired
+    private RetrievalRecordMapper retrievalRecordMapper;
 
 
     public ProductApplication findProductApplicationById(Long id)
@@ -40,11 +41,45 @@ public class ProductApplicationService {
         return productApplicationMapper.selectUnstoredProductApplication();
     }
 
+    @Transactional(rollbackFor = RuntimeException.class)
     public Long addProductApplication(Long pid, Integer number) {
+        List<ProductMaterial> relations
+                = productMaterialMapper.selectProductMaterialByPid(pid);
+        for (ProductMaterial relation : relations) {
+            Long mid = relation.getMid();
+            int spent = number * relation.getNumber();
+            Integer rest = retrievalRecordMapper.selectRestNumberByMid(mid);
+            if (rest == null || spent > rest) {
+                throw new InvalidInput();
+            }
+            List<RetrievalRecord> records
+                    = retrievalRecordMapper.selectRetrievalRecordByMid(mid);
+            for (RetrievalRecord record : records) {
+                Integer recordNumber = record.getNumber();
+                if (recordNumber < rest) {
+                    rest -= recordNumber;
+                    retrievalRecordMapper.deleteRetrievalRecord(record.getId());
+                } else if (recordNumber.equals(rest)) {
+                    retrievalRecordMapper.deleteRetrievalRecord(record.getId());
+                    break;
+                } else {
+                    recordNumber -= rest;
+                    record.setNumber(recordNumber);
+                    retrievalRecordMapper.updateRetrievalRecord(record);
+                    break;
+                }
+            }
+        }
         ProductApplication productApplication = new ProductApplication();
         productApplication.setPid(pid).setNumber(number);
         productApplicationMapper.insertProductApplication(productApplication);
         return productApplication.getId();
+    }
+
+    public void addProductApplicationBySailOrder(Long pid, Integer number) {
+        ProductApplication productApplication = new ProductApplication();
+        productApplication.setPid(pid).setNumber(number);
+        productApplicationMapper.insertProductApplication(productApplication);
     }
 
     public int storeProductApplication(Long id, Long wid, Integer number)
@@ -52,6 +87,9 @@ public class ProductApplicationService {
         Warehouse warehouse = warehouseMapper.selectWarehouseByWid(wid);
         ProductApplication productApplication = productApplicationMapper.selectProductApplicationById(id);
         Integer restNumber = productStorationMapper.selectRestNumber(wid);
+        if (restNumber == null) {
+            restNumber = 0;
+        }
         if (productApplication == null || restNumber + number > warehouse.getMax() ||
                 productApplication.getNumber() == 0 || number > productApplication.getNumber()) {
             throw new InvalidInput();

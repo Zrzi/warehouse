@@ -34,10 +34,14 @@ public class ProductApplicationController {
     @PreAuthorize("hasRole('ROLE_PRODUCTION_DEPT')")
     public ResponseData addProductApplication(@RequestParam("pid") Long pid,
                                               @RequestParam("number") Integer number) {
-        Long id = productApplicationService.addProductApplication(pid, number);
-        ResponseData responseData = ResponseData.success();
-        responseData.getData().put("id", id);
-        return responseData;
+        try {
+            Long id = productApplicationService.addProductApplication(pid, number);
+            ResponseData responseData = ResponseData.success();
+            responseData.getData().put("id", id);
+            return responseData;
+        } catch (InvalidInput e) {
+            return ResponseData.fail(e.getMessage());
+        }
     }
 
     @ResponseBody

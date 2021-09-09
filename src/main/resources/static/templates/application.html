@@ -76,16 +76,8 @@
         });
     });
 
-    function member_del(obj,id){
-        layer.confirm('确认要删除吗？',function(index){
-            //发异步删除数据
-            $(obj).parents("tr").remove();
-            layer.msg('已删除!',{icon:1,time:1000});
-        });
-    }
-
     function load() {
-        getApplications()
+        getApplications();
     }
 
     function reload(){
@@ -93,7 +85,7 @@
         while (table.rows.length > 1) {
             table.deleteRow(1);
         }
-        getApplications()
+        getApplications();
     }
     function getApplications() {
         $.ajax({
@@ -112,7 +104,7 @@
                             + '<td>' + applications[index].pid + '</td>'
                             + '<td>' + applications[index].number + '</td>'
                             + '<td class="td-manage">'
-                            + '<a title="存储" onclick="xadmin.open(\'存储\',\'./product-store.html\')" href="javascript:;">'
+                            + '<a title="存储" onclick="xadmin.open(\'存储\',\'./product-store.html\', null, null, null, ' + applications[index].id + ')" href="javascript:;">'
                             + '<i class="layui-icon">&#xe698;</i>'
                             + '</a>'
                             + '</td>'
@@ -120,11 +112,11 @@
                         tbody.append(tr)
                     }
                 } else {
-                    alert(result.message)
+                    layer.msg(result.message, {icon: 1, time: 1000});
                 }
             },
             error(message) {
-                alert(message)
+                layer.msg(message, {icon: 1, time: 1000});
             }
         })
     }

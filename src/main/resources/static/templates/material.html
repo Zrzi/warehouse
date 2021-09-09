@@ -144,11 +144,11 @@
                         tbody.append(tr)
                     }
                 } else {
-                    alert(result.message)
+                    layer.msg(result.message, {icon:1, time:1000});
                 }
             },
             error(message) {
-                alert(message)
+                layer.msg(message, {icon:1, time:1000});
             }
         })
     }

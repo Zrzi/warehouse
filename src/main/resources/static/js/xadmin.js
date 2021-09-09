@@ -73,19 +73,22 @@
 	 * @param  {Boolean} full  [全屏]
 	 * @return {[type]}        [description]
 	 */
-	Xadmin.prototype.open = function (title,url,w,h,full) {
-		if (title == null || title == '') {
-	        var title=false;
-	    };
-	    if (url == null || url == '') {
-	        var url="404.html";
-	    };
-	    if (w == null || w == '') {
-	        var w=($(window).width()*0.9);
-	    };
-	    if (h == null || h == '') {
-	        var h=($(window).height() - 50);
-	    };
+	Xadmin.prototype.open = function (title,url,w,h,full, id) {
+		if (title == null || title === '') {
+	        var title = false;
+	    }
+	    if (url == null || url === '') {
+	        var url = "404.html";
+	    }
+	    if (w == null || w === '') {
+            var w = ($(window).width() * 0.9);
+        }
+	    if (h == null || h === '') {
+	        var h = ($(window).height() - 50);
+	    }
+	    if (id != null && id !== '') {
+	        window.localStorage.setItem('id', id);
+        }
 	    var index = layer.open({
 	        type: 2,
 	        area: [w+'px', h +'px'],

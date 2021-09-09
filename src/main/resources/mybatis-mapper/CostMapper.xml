@@ -10,14 +10,26 @@
         WHERE `date` = #{date}
     </select>
 
+    <select id="selectIsChecked" resultType="Integer" parameterType="String">
+        SELECT `checked`
+        FROM `cost`
+        WHERE `date` = #{date}
+    </select>
+
     <insert id="insertCost">
-        INSERT INTO `cost` (`date`, `cost`)
-        VALUES (#{date}, #{cost})
+        INSERT INTO `cost` (`date`, `cost`, `checked`)
+        VALUES (#{date}, #{cost}, 0)
     </insert>
 
     <update id="updateCost">
         UPDATE `cost`
         SET `cost` = #{cost}
+        WHERE `date` = #{date}
+    </update>
+
+    <update id="checkCost">
+        UPDATE `cost`
+        SET `checked` = 1
         WHERE `date` = #{date}
     </update>
 

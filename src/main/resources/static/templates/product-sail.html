@@ -89,13 +89,13 @@
                 success(result) {
                     if (result.code === 200) {
                         $(obj).parents("tr").remove();
-                        layer.msg('退货成功',{icon:1,time:1000});
+                        layer.msg("退货成功", {icon: 1, time: 1000});
                     } else {
-                        layer.msg(result.message,{icon:1,time:1000});
+                        layer.msg(result.message,{icon: 1, time: 1000});
                     }
                 },
                 error(message) {
-                    layer.msg(message,{icon:1,time:1000});
+                    layer.msg(message,{icon: 1, time: 1000});
                 }
             })
         });

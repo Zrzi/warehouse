@@ -30,6 +30,8 @@ public interface PurchaseOrderMapper {
 
     Integer insertPurchaseOrder(@Param("order") PurchaseOrder purchaseOrder);
 
+    Integer insertUnstoredPurchaseOrder(@Param("order") PurchaseOrder purchaseOrder);
+
     Integer updatePurchaseOrder(@Param("order") PurchaseOrder purchaseOrder);
 
     Integer deletePurchaseOrder(@Param("id") Long id);

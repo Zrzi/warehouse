@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -20,6 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private MyAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,35 +52,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("JSESSIONID");
         http.authorizeRequests()
                 .antMatchers("/static/**/**", "/login").permitAll()
-                .anyRequest().authenticated();
-        http.csrf()
-                .disable();
-        /*http.authorizeRequests()
-                .antMatchers("/templates/**" ,"/js/**", "/css/**", "/images/**", "/fonts/**", "/lib/** ", "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-            .formLogin()
-                .loginPage("/templates/login.html")
-                .successHandler(new AuthenticationSuccessHandler() {
-                    private final RequestCache requestCache = new HttpSessionRequestCache();
-                    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-                        SavedRequest savedRequest = requestCache.getRequest(httpServletRequest, httpServletResponse);
-                        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, savedRequest.getRedirectUrl());
-                    }
-                })
-                .failureHandler(new AuthenticationFailureHandler() {
-                    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-                    @Override
-                    public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-                        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/templates/login.html");
-                    }
-                })
-                .loginProcessingUrl("/login")
-                .and()
-            .csrf()
-                .disable();*/
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler);
+        http.csrf()
+                .disable();
     }
 
 }

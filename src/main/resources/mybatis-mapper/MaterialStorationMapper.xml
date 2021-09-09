@@ -6,9 +6,9 @@
 
     <resultMap id="storation" type="com.database.warehouse.entity.MaterialStoration">
         <id property="id" column="material_storation_id" />
-        <id property="wid" column="material_storation_warehouse_id" />
-        <id property="mid" column="material_storation_material_id" />
-        <id property="time" column="material_storation_time" />
+        <result property="wid" column="material_storation_warehouse_id" />
+        <result property="mid" column="material_storation_material_id" />
+        <result property="time" column="material_storation_time" />
         <result property="number" column="material_storation_number" />
         <result property="restNumber" column="material_storation_rest_number" />
         <result property="price" column="material_storation_price" />

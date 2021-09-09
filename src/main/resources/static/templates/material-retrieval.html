@@ -2,7 +2,7 @@
 <html class="x-admin-sm">
 <head>
   <meta charset="UTF-8">
-  <title>材料存储</title>
+  <title>领料记录</title>
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
@@ -18,6 +18,9 @@
 </head>
 <body>
 <div class="x-nav">
+  <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="check()" title="更新成本">
+    <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+  </a>
   <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="reload()" title="刷新">
     <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
   </a>
@@ -33,10 +36,12 @@
               <th>
                 <input type="checkbox" name=""  lay-skin="primary">
               </th>
-              <th>仓库id</th>
+              <th>id</th>
               <th>材料id</th>
               <th>材料名称</th>
-              <th>剩余数量</th>
+              <th>数量</th>
+              <th>价格</th>
+              <th>时间</th>
               <th>操作</th>
             </thead>
             <tbody>
@@ -77,53 +82,73 @@
   });
 
   function load() {
-    getStorations()
+    getRecords();
   }
 
-  function reload(){
+  function reload() {
     var table = document.getElementById('table');
     while (table.rows.length > 1) {
       table.deleteRow(1);
     }
-    getStorations()
+    getRecords();
   }
 
-  function getStorations() {
+  function check() {
     layui.use(['layer', 'jquery'], function() {
       $ = layui.jquery;
       var layer = layui.layer;
       $.ajax({
-        type: "get",
-        url: "/materialStorations",
+        type: "put",
+        url: "/updateCost",
         data: {},
         success(result) {
           if (result.code === 200) {
-            var materials = result.data.data
-            var size = result.data.size
-            var tbody = document.getElementById('table')
-            for (var index=0; index<size; index++) {
-              var tr = document.createElement('tr')
-              var info = '<td>' + '<input type="checkbox" name=""  lay-skin="primary">' + '</td>'
-                      + '<td>' + materials[index].wid + '</td>'
-                      + '<td>' + materials[index].material.mid + '</td>'
-                      + '<td>' + materials[index].material.name + '</td>'
-                      + '<td>' + materials[index].number + '</td>'
-                      + '<td class="td-manage">'
-                      + '<a title="领料" onclick="xadmin.open(\'领料\', \'./material-draw.html\')" href="javascript:;">'
-                      + '<i class="layui-icon">&#xe642;</i>'
-                      + '</a>'
-                      + '</td>'
-              tr.innerHTML = info
-              tbody.append(tr)
-            }
+            layer.msg("更新成功", {icon: 6, time: 1000});
           } else {
-            layer.msg(record.message, {icon: 1, time: 1000});
+            layer.msg(result.message, {icon: 6, time: 1000});
           }
         },
         error(message) {
-          layer.msg(message, {icon: 1, time: 1000});
+          layer.msg(message, {icon: 6, time: 1000});
         }
       })
+    })
+  }
+
+  function getRecords() {
+    $.ajax({
+      type: "get",
+      url: "/retrievalRecords",
+      data: {},
+      success(result) {
+        if (result.code === 200) {
+          var records = result.data.data
+          var size = result.data.size
+          var tbody = document.getElementById('table')
+          for (var index=0; index<size; index++) {
+            var tr = document.createElement('tr')
+            var info = '<td>' + '<input type="checkbox" name=""  lay-skin="primary">' + '</td>'
+                    + '<td>' + records[index].id + '</td>'
+                    + '<td>' + records[index].material.mid + '</td>'
+                    + '<td>' + records[index].material.name + '</td>'
+                    + '<td>' + records[index].number + '</td>'
+                    + '<td>' + records[index].price + '</td>'
+                    + '<td>' + records[index].time + '</td>'
+                    + '<td class="td-manage">'
+                    + '<a title="退料" onclick="xadmin.open(\'退料\', \'./material-return.html\', null, null, null, ' + records[index].id + ')" href="javascript:;">'
+                    + '<i class="layui-icon">&#xe642;</i>'
+                    + '</a>'
+                    + '</td>'
+            tr.innerHTML = info
+            tbody.append(tr)
+          }
+        } else {
+          alert(result.message);
+        }
+      },
+      error(message) {
+        alert(message);
+      }
     })
   }
 </script>

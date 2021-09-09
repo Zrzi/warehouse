@@ -1,5 +1,6 @@
 package com.database.warehouse.controller;
 
+import com.database.warehouse.entity.Employee;
 import com.database.warehouse.entity.PurchaseOrder;
 import com.database.warehouse.entity.ResponseData;
 import com.database.warehouse.entity.vo.PurchaseOrderVO;
@@ -7,6 +8,7 @@ import com.database.warehouse.exception.InvalidInput;
 import com.database.warehouse.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,11 +47,13 @@ public class PurchaseOrderController {
     @ResponseBody
     @PostMapping("/purchaseOrder")
     @PreAuthorize("hasRole('ROLE_PURCHASE_ORDER_DEPT')")
-    public ResponseData insertPurchaseOrder(@RequestParam("name") String name,
-                                            @RequestParam("mid") Long mid,
+    public ResponseData insertPurchaseOrder(@RequestParam("mid") Long mid,
                                             @RequestParam("number") Integer number,
-                                            @RequestParam("price") Double price) {
-        Long id = purchaseOrderService.addPurchaseOrder(name, mid, number, price);
+                                            @RequestParam("price") Double price,
+                                            Authentication authentication) {
+        Employee employee = (Employee) authentication.getPrincipal();
+        Long eid = employee.getEid();
+        Long id = purchaseOrderService.addPurchaseOrder(eid, mid, number, price);
         ResponseData responseData = ResponseData.success();
         responseData.getData().put("id", id);
         return responseData;
@@ -69,7 +73,7 @@ public class PurchaseOrderController {
 
     @ResponseBody
     @DeleteMapping("/approvePurchaseOrder")
-    @PreAuthorize("hasRole('ROLE_PURCHASE_ORDER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_PURCHASE_ORDER_DEPT', 'ROLE_PURCHASE_ORDER_ADMIN')")
     public ResponseData disapprovePurchaseOrder(@RequestParam("id") Long id) {
         try {
             purchaseOrderService.disapprovePurchaseOrder(id);

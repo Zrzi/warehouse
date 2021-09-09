@@ -112,6 +112,13 @@
         VALUES (#{order.eid}, #{order.mid}, #{order.time}, #{order.number}, #{order.number}, #{order.price}, 0, 0)
     </insert>
 
+    <insert id="insertUnstoredPurchaseOrder" parameterType="com.database.warehouse.entity.PurchaseOrder"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="purchase_order_id">
+        INSERT INTO `purchase_order` (`purchase_order_employee_id`, `purchase_order_material_id`, `purchase_order_time`, `purchase_order_number`,
+                                      `purchase_order_rest_number`, `purchase_order_price`, `purchase_order_approved`, `purchase_order_stored`)
+        VALUES (#{order.eid}, #{order.mid}, #{order.time}, #{order.number}, #{order.number}, #{order.price}, 1, 0)
+    </insert>
+
     <update id="updatePurchaseOrder" parameterType="com.database.warehouse.entity.PurchaseOrder">
         UPDATE `purchase_order`
         SET `purchase_order_number` = #{order.number},

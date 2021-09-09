@@ -18,7 +18,7 @@
 </head>
 <body>
 <div class="x-nav">
-  <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="reload()" title="刷新">
+  <a id="reload" class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" title="刷新">
     <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
   </a>
 </div>
@@ -70,9 +70,11 @@
 </div>
 </body>
 <script>
-  layui.use(['laydate','form'], function(){
+  layui.use(['laydate','form', 'layer', 'jquery'], function(){
+    $ = layui.jquery;
     var laydate = layui.laydate;
     var form = layui.form;
+    var layer = layui.layer;
 
     //执行一个laydate实例
     laydate.render({
@@ -83,55 +85,61 @@
     laydate.render({
       elem: '#end' //指定元素
     });
+
+    function getUnstoredMaterials() {
+      layui.use(['layer', 'jquery'], function() {
+        $ = layui.jquery;
+        var layer = layui.layer;
+        $.ajax({
+          type: "get",
+          url: "/unstoredPurchaseOrder",
+          data: {},
+          success(result) {
+            if (result.code === 200) {
+              var orders = result.data.data
+              var size = result.data.size
+              var tbody = document.getElementById('table')
+              for (var index=0; index<size; index++) {
+                var tr = document.createElement('tr')
+                var info = '<td>' + '<input type="checkbox" name=""  lay-skin="primary">' + '</td>'
+                        + '<td>' + orders[index].id + '</td>'
+                        + '<td>' + orders[index].employee.name + '</td>'
+                        + '<td>' + orders[index].material.name + '</td>'
+                        + '<td>' + orders[index].time + '</td>'
+                        + '<td>' + orders[index].restNumber + '</td>'
+                        + '<td>' + orders[index].price + '</td>'
+                        + '<td class="td-manage">'
+                        + '<a title="存储" onclick="xadmin.open(\'存储\', \'./material-store.html\', null, null, null, ' + orders[index].id + ')" href="javascript:;">'
+                        + '<i class="layui-icon">&#xe698;</i>'
+                        + '</a>'
+                        + '</td>'
+                tr.innerHTML = info
+                tbody.append(tr)
+              }
+            } else {
+              layer.msg(result.message, {icon: 1, time: 1000});
+            }
+          },
+          error(message) {
+            layer.msg(message, {icon: 1, time: 1000});
+          }
+        })
+      })
+    }
+
+    window.onload = function() {
+      getUnstoredMaterials();
+    }
+
+    document.getElementById("reload").onclick = function() {
+      var table = document.getElementById('table');
+      while (table.rows.length > 1) {
+        table.deleteRow(1);
+      }
+      getUnstoredMaterials();
+    }
+
   });
 
-  function load() {
-    getUnstoredMaterials();
-  }
-
-  function reload(){
-    var table = document.getElementById('table');
-    while (table.rows.length > 1) {
-      table.deleteRow(1);
-    }
-    getUnstoredMaterials();
-  }
-
-  function getUnstoredMaterials() {
-    $.ajax({
-      type: "get",
-      url: "/unstoredPurchaseOrder",
-      data: {},
-      success(result) {
-        if (result.code === 200) {
-          var orders = result.data.data
-          var size = result.data.size
-          var tbody = document.getElementById('table')
-          for (var index=0; index<size; index++) {
-            var tr = document.createElement('tr')
-            var info = '<td>' + '<input type="checkbox" name=""  lay-skin="primary">' + '</td>'
-                    + '<td>' + orders[index].id + '</td>'
-                    + '<td>' + orders[index].employee.name + '</td>'
-                    + '<td>' + orders[index].material.name + '</td>'
-                    + '<td>' + orders[index].time + '</td>'
-                    + '<td>' + orders[index].restNumber + '</td>'
-                    + '<td>' + orders[index].price + '</td>'
-                    + '<td class="td-manage">'
-                    + '<a title="存储" onclick="xadmin.open(\'存储\', \'./material-store.html\')" href="javascript:;">'
-                    + '<i class="layui-icon">&#xe698;</i>'
-                    + '</a>'
-                    + '</td>'
-            tr.innerHTML = info
-            tbody.append(tr)
-          }
-        } else {
-          alert(result.message)
-        }
-      },
-      error(message) {
-        alert(message)
-      }
-    })
-  }
 </script>
 </html>

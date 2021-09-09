@@ -4,6 +4,7 @@ SET CHARACTER_SET_RESULTS = gbk;
 CREATE TABLE `cost`(
     `date` VARCHAR(10),
     `cost` DECIMAL(11, 2),
+    `checked` INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -101,6 +102,15 @@ CREATE TABLE `purchase_order`(
     PRIMARY KEY (`purchase_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `retrieval_record`(
+    `retrieval_record_id` BIGINT AUTO_INCREMENT,
+    `retrieval_record_material_id` BIGINT NOT NULL,
+    `retrieval_record_number` INTEGER NOT NULL,
+    `retrieval_record_price` DECIMAL(11, 2) NOT NULL,
+    `retrieval_record_time` VARCHAR(10),
+    PRIMARY KEY (`retrieval_record_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `role`(
     `role_id` BIGINT AUTO_INCREMENT,
     `role_name` VARCHAR(32) NOT NULL UNIQUE,
@@ -126,6 +136,27 @@ CREATE TABLE `warehouse`(
     `warehouse_min` INTEGER NOT NULL,
     PRIMARY KEY (`warehouse_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/* 索引 */
+CREATE INDEX `department_name_index` ON `department`(`department_name`);
+
+CREATE INDEX `employee_name_index` ON `employee`(`employee_username`);
+
+CREATE INDEX `material_name_index` ON `material`(`material_name`);
+
+CREATE INDEX `material_storation_index` ON `material_storation`(`material_storation_warehouse_id`, `material_storation_material_id`, `material_storation_time`);
+
+CREATE INDEX `purchase_order_index` ON `purchase_order`(`purchase_order_employee_id`, `purchase_order_material_id`);
+
+CREATE INDEX `retrieval_record_time_index` ON `retrieval_record`(`retrieval_record_time`);
+
+CREATE INDEX `product_name_index` ON `product`(`product_name`);
+
+CREATE INDEX `product_storation_index` ON `product_storation`(`product_storation_warehouse_id`, `product_storation_material_id`, `product_storation_time`);
+
+CREATE INDEX `role_name_index` ON `role`(`role_name`);
+
+CREATE INDEX `warehouse_type_index` ON `warehouse`(`warehouse_type`);
 
 /* role */
 INSERT INTO `role` (`role_name`)
@@ -237,3 +268,21 @@ VALUES ('产品5', 1);
 
 INSERT INTO `product` (`product_name`, `valid`)
 VALUES ('产品6', 1);
+
+INSERT INTO `product_material` (`product_material_product_id`, `product_material_material_id`, `product_material_number`)
+VALUES (1, 1, 10);
+
+INSERT INTO `product_material` (`product_material_product_id`, `product_material_material_id`, `product_material_number`)
+VALUES (2, 2, 10);
+
+INSERT INTO `product_material` (`product_material_product_id`, `product_material_material_id`, `product_material_number`)
+VALUES (3, 3, 10);
+
+INSERT INTO `product_material` (`product_material_product_id`, `product_material_material_id`, `product_material_number`)
+VALUES (4, 4, 10);
+
+INSERT INTO `product_material` (`product_material_product_id`, `product_material_material_id`, `product_material_number`)
+VALUES (5, 5, 10);
+
+INSERT INTO `product_material` (`product_material_product_id`, `product_material_material_id`, `product_material_number`)
+VALUES (6, 6, 10);

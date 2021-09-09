@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.warehouse.mapper.RetrievalRecordMapper">
+
+    <resultMap id="record" type="com.database.warehouse.entity.RetrievalRecord">
+        <id property="id" column="retrieval_record_id" />
+        <result property="mid" column="retrieval_record_material_id" />
+        <result property="number" column="retrieval_record_number" />
+        <result property="price" column="retrieval_record_price" />
+        <result property="time" column="retrieval_record_time" />
+    </resultMap>
+
+    <resultMap id="recordVO" type="com.database.warehouse.entity.vo.RetrievalRecordVO">
+        <id property="id" column="retrieval_record_id" />
+        <result property="number" column="retrieval_record_number" />
+        <result property="price" column="retrieval_record_price" />
+        <result property="time" column="retrieval_record_time" />
+        <association property="material">
+            <id property="mid" column="mid" />
+            <result property="name" column="m_name" />
+        </association>
+    </resultMap>
+
+    <select id="selectRetrievalRecords" resultMap="recordVO">
+        SELECT `retrieval_record`.`retrieval_record_id`, `retrieval_record`.`retrieval_record_number`,
+               `retrieval_record`.`retrieval_record_price`, `retrieval_record`.`retrieval_record_time`,
+               `material`.`material_id` AS `mid`, `material`.`material_name` AS `m_name`
+        FROM `retrieval_record`
+        LEFT JOIN `material`
+        ON `retrieval_record`.`retrieval_record_material_id` = `material`.`material_id`
+        WHERE `retrieval_record`.`retrieval_record_time` = #{time}
+    </select>
+
+    <select id="selectRestRetrievalReocrds" resultMap="record">
+        SELECT `retrieval_record_id`, `retrieval_record_material_id`, `retrieval_record_number`,
+               `retrieval_record_price`, `retrieval_record_time`
+        FROM `retrieval_record`
+        WHERE `retrieval_record_time` = #{time}
+    </select>
+
+    <select id="selectRetrievalRecordById" parameterType="Long" resultMap="record">
+        SELECT `retrieval_record_id`, `retrieval_record_number`, `retrieval_record_price`,
+               `retrieval_record_time`, `retrieval_record_material_id`
+        FROM `retrieval_record`
+        WHERE `retrieval_record_id` = #{id}
+    </select>
+
+    <select id="selectRestNumberByMid" resultType="Integer" parameterType="Long">
+        SELECT SUM(`retrieval_record_number`) AS `number`
+        FROM `retrieval_record`
+        WHERE `retrieval_record_material_id` = #{mid}
+    </select>
+
+    <select id="selectRetrievalRecordByMid" parameterType="Long" resultMap="record">
+        SELECT `retrieval_record_id`, `retrieval_record_number`, `retrieval_record_price`,
+               `retrieval_record_time`, `retrieval_record_material_id`
+        FROM `retrieval_record`
+        WHERE `retrieval_record_material_id` = #{mid}
+    </select>
+
+    <insert id="insertRetrievalRecord" parameterType="com.database.warehouse.entity.RetrievalRecord"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="retireval_record_id">
+        INSERT INTO `retrieval_record` (`retrieval_record_number`, `retrieval_record_price`, `retrieval_record_time`, `retrieval_record_material_id`)
+        VALUES (#{record.number}, #{record.price}, #{record.time}, #{record.mid})
+    </insert>
+
+    <update id="updateRetrievalRecord" parameterType="com.database.warehouse.entity.RetrievalRecord">
+        UPDATE `retrieval_record`
+        SET `retrieval_record_number` = #{record.number},
+            `retrieval_record_price` = #{record.price},
+            `retrieval_record_time` = #{record.time}
+        WHERE `retrieval_record_id` = #{record.id}
+    </update>
+
+    <delete id="deleteRetrievalRecord" parameterType="Long">
+        DELETE FROM `retrieval_record`
+        WHERE `retrieval_record_id` = #{id}
+    </delete>
+
+</mapper>

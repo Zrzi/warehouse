@@ -26,7 +26,7 @@
           <span class="x-red">*</span>名称
         </label>
         <div class="layui-input-inline">
-          <input type="text" id="name" name="name" required="" lay-verify="name"
+          <input type="text" id="name" name="name" required="" lay-verify="required"
                  autocomplete="off" class="layui-input">
         </div>
       </div>
@@ -43,17 +43,11 @@
 <script>layui.use(['form', 'layer'],
         function() {
           $ = layui.jquery;
-          var form = layui.form,
-                  layer = layui.layer;
+          var form = layui.form;
+          var layer = layui.layer;
 
           //自定义验证规则
-          form.verify({
-            name: function(value) {
-              if (value.length <= 0) {
-                return '产品名称不能为空';
-              }
-            }
-          });
+          form.verify({});
 
           //监听提交
           form.on('submit(add)',
@@ -72,7 +66,6 @@
                                   },
                                   function() {
                                     xadmin.close();
-                                    xadmin.father_reload();
                                   });
                         } else {
                           layer.alert(result.message, {
@@ -80,7 +73,6 @@
                                   },
                                   function() {
                                     xadmin.close();
-                                    xadmin.father_reload();
                                   });
                         }
                       },
@@ -90,7 +82,6 @@
                                 },
                                 function() {
                                   xadmin.close();
-                                  xadmin.father_reload();
                                 });
                       }
                     })

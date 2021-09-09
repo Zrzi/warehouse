@@ -2,6 +2,7 @@ package com.database.warehouse.controller;
 
 import com.database.warehouse.entity.ResponseData;
 import com.database.warehouse.entity.Warehouse;
+import com.database.warehouse.entity.vo.WarehouseVO;
 import com.database.warehouse.exception.*;
 import com.database.warehouse.service.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class WarehouseController {
     @GetMapping("/warehouses")
     @PreAuthorize("hasAnyRole('ROLE_WAREHOUSE_ADMIN', 'ROLE_PURCHASE_ORDER_DEPT', 'ROLE_PURCHASE_ORDER_ADMIN', 'ROLE_PRODUCTION_DEPT', 'ROLE_SAILS_DEPT', 'ROLE_FINANCE_DEPT')")
     public ResponseData getWarehouses() {
-        List<Warehouse> warehouses = warehouseService.findWarehouse();
+        List<WarehouseVO> warehouses = warehouseService.findWarehouse();
         ResponseData responseData = ResponseData.success();
         responseData.getData().put("warehouses", warehouses);
         responseData.getData().put("size", warehouses.size());

@@ -41,7 +41,7 @@ public class SailOrderController {
     public ResponseData deleteSailOrder(@RequestParam("id") Long id) {
         try {
             SailOrder sailOrder = sailOrderService.removeSailOrder(id);
-            applicationService.addProductApplication(sailOrder.getPid(), sailOrder.getNumber());
+            applicationService.addProductApplicationBySailOrder(sailOrder.getPid(), sailOrder.getNumber());
             return ResponseData.success();
         } catch (DeleteUnable e) {
             return ResponseData.fail(e.getMessage());
